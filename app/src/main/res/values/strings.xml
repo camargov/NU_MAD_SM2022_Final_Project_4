@@ -9,4 +9,15 @@
     <string name="button_save">Save</string>
     <string name="textView_numberOfColors">Number of Colors:</string>
     <string name="editText_addColorCode">Add Color Code</string>
+
+    <string name="favorite_welcome">Welcome Artist!</string>
+    <string name="favorite_palette_list_label">Your palettes:</string>
+
+    <string-array name="palette_sort_options">
+        <item>Sort by:</item>
+        <item>Favorites</item>
+        <item>Name</item>
+        <item>Colors</item>
+        <item>Last modified</item>
+    </string-array>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,6 +8,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +20,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class FavoriteFragment extends Fragment {
+
+    ListView paletteList;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -61,6 +69,37 @@ public class FavoriteFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
         getActivity().setTitle("Favorites");
+
+        this.paletteList = view.findViewById(R.id.favorite_listView_palettes);
+        List<ColorPalette> palettes = new ArrayList<>();
+        palettes.add(this.makeTestPalette(
+                "Palette 1",
+                Color.RED,
+                Color.GREEN,
+                Color.BLUE
+        ));
+        palettes.add(this.makeTestPalette(
+                "Palette 2",
+                Color.CYAN,
+                Color.YELLOW,
+                Color.MAGENTA
+        ));
+        palettes.add(this.makeTestPalette(
+                "Palette 3",
+                Color.WHITE,
+                Color.LTGRAY,
+                Color.GRAY,
+                Color.DKGRAY,
+                Color.BLACK
+        ));
+        PaletteListEntryAdapter adapter = new PaletteListEntryAdapter(this.getContext(), palettes);
+        this.paletteList.setAdapter(adapter);
+
         return view;
+    }
+
+    private ColorPalette makeTestPalette(String name, Integer ... colors) {
+        List<Integer> colorsList = new ArrayList<Integer>(Arrays.asList(colors));
+        return new ColorPalette(name, colorsList);
     }
 }
