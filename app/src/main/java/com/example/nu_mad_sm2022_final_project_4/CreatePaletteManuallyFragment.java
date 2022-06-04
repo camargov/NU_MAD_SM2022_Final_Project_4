@@ -10,8 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
-public class CreatePaletteManuallyFragment extends Fragment {
+public class CreatePaletteManuallyFragment extends Fragment implements View.OnClickListener {
     //private static final String ARG_PARAM1 = "param1";
     //private static final String ARG_PARAM2 = "param2";
     //private String mParam1;
@@ -19,6 +20,7 @@ public class CreatePaletteManuallyFragment extends Fragment {
     private EditText editTextPaletteName, editTextNumber;
     private RecyclerView recyclerView;
     private Button buttonSave;
+    private Spinner spinner;
 
     public CreatePaletteManuallyFragment() {}
 
@@ -48,6 +50,16 @@ public class CreatePaletteManuallyFragment extends Fragment {
         editTextNumber = view.findViewById(R.id.editTextCreatePaletteManuallyNumber);
         recyclerView = view.findViewById(R.id.recyclerViewCreatePaletteManually);
         buttonSave = view.findViewById(R.id.buttonCreatePaletteManuallySave);
+        spinner = view.findViewById(R.id.spinnerCreatePaletteManually);
+        buttonSave.setOnClickListener(this);
+
         return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.buttonCreatePaletteManuallySave) {
+
+        }
     }
 }
