@@ -9,4 +9,6 @@
     <string name="button_save">Save</string>
     <string name="textView_numberOfColors">Number of Colors:</string>
     <string name="editText_addColorCode">Add Color Code</string>
+    <string name="textView_searchResults">Search results for</string>
+    <string name="button_add">Add</string>
 </resources>
