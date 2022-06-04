@@ -12,6 +12,8 @@
 
     <string name="favorite_welcome">Welcome Artist!</string>
     <string name="favorite_palette_list_label">Your palettes:</string>
+    <string name="button_add">Add</string>
+    <string name="textView_searchResults">Search results for</string>
 
     <string-array name="palette_sort_options">
         <item>Sort by:</item>
