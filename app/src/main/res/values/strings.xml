@@ -2,4 +2,9 @@
     <string name="app_name">NU_MAD_SM2022_Final_Project_4</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="button_seeMore">See More</string>
+    <string name="textView_prominentColors">Prominent Colors:</string>
+    <string name="textView_paletteName">Palette Name</string>
+    <string name="textView_suggestedColorPalettes">Suggested Color Palettes:</string>
+    <string name="button_save">Save</string>
 </resources>
