@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,8 +28,10 @@ public class PaletteColorsViewAdapter extends ArrayAdapter<Integer> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.listview_palette_color, parent, false);
         }
 
-        ConstraintLayout constraint = convertView.findViewById(R.id.paletteColors_constraintLayout);
+        ConstraintLayout constraint = convertView.findViewById(R.id.paletteColors_constraintLayout_colorContainer);
+        // TextView text = convertView.findViewById(R.id.paletteColors_textView_colorText);
         constraint.setBackgroundColor(color);
+        // text.setBackgroundColor(color);
 
         return convertView;
     }

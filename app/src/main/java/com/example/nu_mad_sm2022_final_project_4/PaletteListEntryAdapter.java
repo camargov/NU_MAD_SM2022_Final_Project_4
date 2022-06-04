@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,10 +30,14 @@ public class PaletteListEntryAdapter extends ArrayAdapter<ColorPalette> {
         }
 
         TextView name = convertView.findViewById(R.id.paletteList_textView_name);
-        ListView colorList = convertView.findViewById(R.id.paletteList_listView_colors);
-        colorList.setAdapter(new PaletteColorsViewAdapter(this.getContext(), palette.GetColors()));
+        LinearLayout colorList = convertView.findViewById(R.id.paletteList_linearLayout_palettes);
 
         name.setText(palette.GetName());
+
+        PaletteColorsViewAdapter adapter = new PaletteColorsViewAdapter(this.getContext(), palette.GetColors());
+        for(int i = 0; i < adapter.getCount(); i++) {
+            colorList.addView(adapter.getView(i, null, colorList));
+        }
 
         return convertView;
     }
