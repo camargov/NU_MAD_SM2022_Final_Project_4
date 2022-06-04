@@ -7,4 +7,5 @@
     <string name="textView_paletteName">Palette Name</string>
     <string name="textView_suggestedColorPalettes">Suggested Color Palettes:</string>
     <string name="button_save">Save</string>
+    <string name="textView_numberOfColors">Number of Colors:</string>
 </resources>
