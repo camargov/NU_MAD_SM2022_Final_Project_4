@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/CS4520/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_camera.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.274534717504529" />
         <entry key="app/src/main/res/layout/create_palette_manually_add_color.xml" value="0.2570034085073732" />
         <entry key="app/src/main/res/layout/explore_search_color_row.xml" value="0.29226799590971697" />

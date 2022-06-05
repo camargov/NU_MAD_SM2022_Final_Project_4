@@ -1,12 +1,39 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Size;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.CameraProvider;
+import androidx.camera.core.CameraX;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.Preview;
+import androidx.camera.core.impl.PreviewConfig;
+import androidx.camera.core.impl.UseCaseConfig;
+import androidx.camera.core.impl.UseCaseConfig.Builder;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.lifecycle.LifecycleOwner;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.example.nu_mad_sm2022_final_project_4.databinding.ActivityMainBinding;
+import com.google.common.util.concurrent.ListenableFuture;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,17 +42,23 @@ import android.view.ViewGroup;
  */
 public class CameraFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private ActivityMainBinding viewBinding;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ImageCapture imageCapture;
+    private ExecutorService cameraExecutor;
+
+    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+
+    private View previewView;
+    private Preview preview;
+    private PreviewView viewFinder;
+
+    private static final int CAMERA_REQUEST_CODE = 100;
+
 
     public CameraFragment() {
         // Required empty public constructor
+
     }
 
     /**
@@ -40,8 +73,6 @@ public class CameraFragment extends Fragment {
     public static CameraFragment newInstance() {
         CameraFragment fragment = new CameraFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,9 +81,14 @@ public class CameraFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
+
         }
+    }
+
+    private boolean allPermissionsGranted(){
+        return (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED);
     }
 
     @Override
@@ -61,6 +97,40 @@ public class CameraFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         getActivity().setTitle("Add Palette");
+        viewFinder = view.findViewById(R.id.viewFinder);
+        if (allPermissionsGranted()) {
+            viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
+            cameraProviderFuture = ProcessCameraProvider.getInstance(getContext());
+            // Request camera permissions
+            cameraProviderFuture.addListener(() -> {
+                try {
+                    ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                    bindPreview(cameraProvider);
+                } catch (ExecutionException | InterruptedException e) {
+                    // Should never be reached
+                    Toast.makeText(getContext(), "Camera Provider not found. Something went very wrong.", Toast.LENGTH_SHORT).show();
+                }
+            }, ContextCompat.getMainExecutor(getContext()));
+        } else {
+            while(!allPermissionsGranted()) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
+            }
+        }
         return view;
     }
+
+    void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
+        Preview preview = new Preview.Builder()
+                .build();
+
+        CameraSelector cameraSelector = new CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .build();
+
+        preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
+
+        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview);
+    }
+
+
 }
