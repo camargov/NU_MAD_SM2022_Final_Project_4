@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleOwner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.nu_mad_sm2022_final_project_4.databinding.ActivityMainBinding;
@@ -46,6 +47,7 @@ public class CameraFragment extends Fragment {
 
     private ImageCapture imageCapture;
     private ExecutorService cameraExecutor;
+    private Button take_picture;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
 
@@ -97,6 +99,14 @@ public class CameraFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         getActivity().setTitle("Add Palette");
+        take_picture = view.findViewById(R.id.button_takePhoto);
+        take_picture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Capture photo.
+            }
+        });
+
         viewFinder = view.findViewById(R.id.viewFinder);
         if (allPermissionsGranted()) {
             viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -111,6 +121,7 @@ public class CameraFragment extends Fragment {
                     Toast.makeText(getContext(), "Camera Provider not found. Something went very wrong.", Toast.LENGTH_SHORT).show();
                 }
             }, ContextCompat.getMainExecutor(getContext()));
+
         } else {
             while(!allPermissionsGranted()) {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
