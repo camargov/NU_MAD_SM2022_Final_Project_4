@@ -2,6 +2,7 @@ package com.example.nu_mad_sm2022_final_project_4;
 
 import android.graphics.Picture;
 import android.net.Uri;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,12 +26,24 @@ public class displayGalleryViewAdapter extends RecyclerView.Adapter<displayGalle
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_picture_item,parent,false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.uri = pictures.get(position);
+        holder.gImageView.setImageURI(pictures.get(position));
 
+        holder.gView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(listener!= null){
+                    //TODO: Stub for selecting item
+                    listener.onDisplayImageInteraction(holder.uri);
+                }
+            }
+        });
     }
 
     @Override
@@ -42,7 +55,7 @@ public class displayGalleryViewAdapter extends RecyclerView.Adapter<displayGalle
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View gView;
         public final ImageView gImageView;
-        public URI uri;
+        public Uri uri;
 
         public ViewHolder (View v){
             super(v);

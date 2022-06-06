@@ -1,6 +1,7 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -66,6 +67,6 @@ public class PictureItemFragment extends Fragment {
     }
 
     public interface OnDisplayImageFragmentListener {
-        void onDisplayImageInteraction(URI uri);
+        void onDisplayImageInteraction(Uri uri);
     }
 }

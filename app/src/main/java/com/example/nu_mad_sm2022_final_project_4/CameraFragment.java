@@ -48,6 +48,7 @@ public class CameraFragment extends Fragment {
     private ImageCapture imageCapture;
     private ExecutorService cameraExecutor;
     private Button take_picture;
+    private Button goto_album;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
 
@@ -107,6 +108,20 @@ public class CameraFragment extends Fragment {
             }
         });
 
+        goto_album = view.findViewById(R.id.button_albumDisplay);
+        goto_album.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //open up album
+                if(getActivity() instanceof iToGalleryHelper){
+                    iToGalleryHelper helper = (iToGalleryHelper) getActivity();
+                }
+            }
+        });
+
+
+
+        //Handles preview
         viewFinder = view.findViewById(R.id.viewFinder);
         if (allPermissionsGranted()) {
             viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -141,6 +156,11 @@ public class CameraFragment extends Fragment {
         preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
 
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview);
+    }
+
+    //interface for sending signal to activity
+    public interface iToGalleryHelper {
+        public void showGallery();
     }
 
 
