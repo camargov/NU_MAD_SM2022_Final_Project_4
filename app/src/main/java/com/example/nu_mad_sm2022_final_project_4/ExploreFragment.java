@@ -23,7 +23,7 @@ public class ExploreFragment extends Fragment {
     private RecyclerView recyclerView;
     private ExploreSearchAdapter adapter;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
-    private ArrayList<String> searchResults = new ArrayList<>();
+    private ArrayList<ColorPalette> searchResults = new ArrayList<>();
 
     public ExploreFragment() {}
 
@@ -60,11 +60,11 @@ public class ExploreFragment extends Fragment {
     }
 
     /*
-    Later change array list to one of objects (palette object)
+    Add event for when user clicks on a row - different fragment
+
     After searching for a word: add words to searchResults
     Also after entering when searching a word, the textView that says "Search results for..." updates
 
-    Stretch goal: another view after clicking on a specific palette - probably same view as the favorites
-    page after clicking on a palette
+    After clicking on a specific palette - explore search result fragment is populated
      */
 }

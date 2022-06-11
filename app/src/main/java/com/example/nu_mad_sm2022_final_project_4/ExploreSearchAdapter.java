@@ -12,29 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class ExploreSearchAdapter extends RecyclerView.Adapter<ExploreSearchAdapter.ViewHolder> {
-    private ArrayList<String> searchResults;
+    private ArrayList<ColorPalette> searchResults;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textViewPaletteName;
-        private final Button buttonAdd;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            textViewPaletteName = itemView.findViewById(R.id.textViewExploreSearchRowName);
-            buttonAdd = itemView.findViewById(R.id.buttonExploreSearchRowAdd);
+            textViewPaletteName = itemView.findViewById(R.id.paletteList_textView_name);
         }
 
         public TextView getTextViewPaletteName() {
             return textViewPaletteName;
         }
-
-        public Button getButtonAdd() {
-            return buttonAdd;
-        }
     }
 
-    public ExploreSearchAdapter(ArrayList<String> searchResults) {
+    public ExploreSearchAdapter(ArrayList<ColorPalette> searchResults) {
         this.searchResults = searchResults;
     }
 
@@ -42,18 +35,14 @@ public class ExploreSearchAdapter extends RecyclerView.Adapter<ExploreSearchAdap
     @Override
     public ExploreSearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.explore_search_color_row, parent, false);
+                .inflate(R.layout.listview_palette, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ExploreSearchAdapter.ViewHolder holder, int position) {
-        holder.getButtonAdd().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        holder.getTextViewPaletteName().setText(searchResults.get(position).GetName());
+        // add colors
     }
 
     @Override

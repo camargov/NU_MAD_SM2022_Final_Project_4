@@ -1,9 +1,10 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ColorPalette {
+public class ColorPalette implements Serializable {
     private String name;
     private List<Integer> colors;
 
