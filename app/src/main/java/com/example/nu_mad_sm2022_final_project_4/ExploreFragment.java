@@ -1,5 +1,6 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ExploreFragment extends Fragment implements SearchView.OnQueryTextListener {
     // UI Elements
@@ -45,6 +47,17 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
         getActivity().setTitle("Explore");
+
+        // TEMPORARY FOR TESTING:
+        searchResults.add(
+                new ColorPalette("Primary RGB",
+                new ArrayList<Integer>(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE))));
+        searchResults.add(
+                new ColorPalette("Primary CMYK",
+                        new ArrayList<Integer>(Arrays.asList(Color.CYAN, Color.MAGENTA, Color.YELLOW))));
+        searchResults.add(
+                new ColorPalette("Valentines Day",
+                        new ArrayList<Integer>(Arrays.asList(Color.MAGENTA, Color.BLUE, Color.RED))));
 
         // Defining UI Elements
         searchView = view.findViewById(R.id.searchViewExplore);
