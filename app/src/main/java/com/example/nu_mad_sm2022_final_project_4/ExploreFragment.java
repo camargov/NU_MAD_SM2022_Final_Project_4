@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -56,7 +57,7 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
         recyclerView = view.findViewById(R.id.recyclerViewExplore);
         recyclerViewLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
-        adapter = new ExploreSearchAdapter(searchResults);
+        adapter = new ExploreSearchAdapter(searchResults, getActivity());
         recyclerView.setAdapter(adapter);
 
         return view;
@@ -77,10 +78,4 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
         // update suggestion list
         return false;
     }
-
-    /*
-    Add event for when user clicks on a row - different fragment
-    Also after entering when searching a word, the textView that says "Search results for..." updates
-    After clicking on a specific palette - explore search result fragment is populated
-     */
 }

@@ -1,5 +1,6 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 
 public class ExploreSearchAdapter extends RecyclerView.Adapter<ExploreSearchAdapter.ViewHolder> {
     private ArrayList<ColorPalette> searchResults;
+    private IAddFragment fragmentListener;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textViewPaletteName;
@@ -27,8 +29,9 @@ public class ExploreSearchAdapter extends RecyclerView.Adapter<ExploreSearchAdap
         }
     }
 
-    public ExploreSearchAdapter(ArrayList<ColorPalette> searchResults) {
+    public ExploreSearchAdapter(ArrayList<ColorPalette> searchResults, Context context) {
         this.searchResults = searchResults;
+        this.fragmentListener = (IAddFragment) context;
     }
 
     @NonNull
@@ -42,6 +45,12 @@ public class ExploreSearchAdapter extends RecyclerView.Adapter<ExploreSearchAdap
     @Override
     public void onBindViewHolder(@NonNull ExploreSearchAdapter.ViewHolder holder, int position) {
         holder.getTextViewPaletteName().setText(searchResults.get(position).GetName());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentListener.addExploreSearchResultFragment(searchResults.get(holder.getAdapterPosition()));
+            }
+        });
         // add colors
     }
 
