@@ -14,10 +14,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ExploreFragment extends Fragment {
+public class ExploreFragment extends Fragment implements SearchView.OnQueryTextListener {
     // UI Elements
     private SearchView searchView;
-    private TextView textViewSearchWord;
+    private TextView textViewSearchWord, textViewSearchResultsFor;
 
     // RecyclerView-related items
     private RecyclerView recyclerView;
@@ -47,7 +47,10 @@ public class ExploreFragment extends Fragment {
 
         // Defining UI Elements
         searchView = view.findViewById(R.id.searchViewExplore);
+        searchView.setOnQueryTextListener(this);
         textViewSearchWord = view.findViewById(R.id.textViewExploreSearchWord);
+        textViewSearchResultsFor = view.findViewById(R.id.textViewExploreSearchResultsFor);
+        textViewSearchResultsFor.setVisibility(View.INVISIBLE);
 
         // Setting up recyclerview
         recyclerView = view.findViewById(R.id.recyclerViewExplore);
@@ -59,12 +62,25 @@ public class ExploreFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        if (!query.equals("")) {
+            textViewSearchWord.setText(query);
+            textViewSearchResultsFor.setVisibility(View.VISIBLE);
+            // update words for searchResults
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        // update suggestion list
+        return false;
+    }
+
     /*
     Add event for when user clicks on a row - different fragment
-
-    After searching for a word: add words to searchResults
     Also after entering when searching a word, the textView that says "Search results for..." updates
-
     After clicking on a specific palette - explore search result fragment is populated
      */
 }
