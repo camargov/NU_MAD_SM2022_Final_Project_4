@@ -33,6 +33,7 @@ public class CreatePaletteOptionsFragment extends Fragment implements View.OnCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_palette_options, container, false);
+        getActivity().setTitle("Add New Palette");
 
         // Defining UI Elements
         buttonTakePhoto = view.findViewById(R.id.buttonCreatePaletteOptionsTakePhoto);

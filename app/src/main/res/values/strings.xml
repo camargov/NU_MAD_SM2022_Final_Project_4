@@ -31,4 +31,6 @@
     <string name="create_new_palette">Create a new palette</string>
     <string name="add_photo">Add Photo</string>
     <string name="manually_add_colors">Manually Add Colors</string>
+    <string name="add_color_hex_code">Add Color Hex Code</string>
+    <string name="current_list_of_colors">Current List of Colors:</string>
 </resources>
