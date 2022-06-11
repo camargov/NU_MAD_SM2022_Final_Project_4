@@ -24,6 +24,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     private IAddFragment fragmentListener;
     private IToastFromFragmentToMain toastListener;
     private boolean isAddButton = true;
+    private int colorPosition;
 
     // UI Elements
     private EditText editTextPaletteName, editTextColorHexCode;
@@ -54,8 +55,10 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_palette_manually, container, false);
+        getActivity().setTitle("Add New Palette");
         editTextPaletteName = view.findViewById(R.id.editTextCreatePaletteManuallyName);
         editTextColorHexCode = view.findViewById(R.id.editTextCreatePaletteManuallyColorHex);
+        textViewAddColorHex = view.findViewById(R.id.textViewCreatePaletteManuallyAddColorHexCode);
         buttonAdd = view.findViewById(R.id.buttonCreatePaletteManuallyAdd);
         buttonAdd.setOnClickListener(this);
         buttonSave = view.findViewById(R.id.buttonCreatePaletteManuallySave);
@@ -94,20 +97,36 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
 
     private void addHexFormat(String hexCode) {
         if ((hexCode.substring(0, 1).equals("#") && hexCode.length() == 7)
-        || hexCode.length() != 6) {
+        || (hexCode.length() == 6)) {
             boolean validChar = true;
             for (int i = 1; i < hexCode.length(); i++) {
                 validChar = validChar && (Character.digit(hexCode.charAt(i), 16) != -1);
             }
             if (validChar) {
-                colors.add(hexCode);
-                adapter.notifyDataSetChanged();
                 if (!isAddButton) {
-                    // UPDATE COLOR IN ARRAY
+                    if (hexCode.length() == 6) {
+                        colors.set(colorPosition, "#" + editTextColorHexCode.getText().toString());
+                    }
+                    else {
+                        colors.set(colorPosition, editTextColorHexCode.getText().toString());
+                    }
                     textViewAddColorHex.setText("Add Color Hex Code");
                     buttonAdd.setText("Add");
                     editTextColorHexCode.setText("");
+                    isAddButton = true;
                 }
+                else {
+                    if (hexCode.length() == 6) {
+                        colors.add("#" + hexCode);
+                    }
+                    else {
+                        colors.add(hexCode);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+            else {
+                toastListener.toastFromFragment("Invalid Character. Hex Characters: 0-9 and A-F");
             }
         }
         else {
@@ -116,8 +135,10 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     }
 
     public void editButtonAction(int position) {
+        isAddButton = false;
         textViewAddColorHex.setText("Edit Hex Color");
         buttonAdd.setText("Save");
         editTextColorHexCode.setText(colors.get(position));
+        colorPosition = position;
     }
 }
