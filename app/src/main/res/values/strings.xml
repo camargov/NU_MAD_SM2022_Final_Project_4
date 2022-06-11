@@ -28,4 +28,7 @@
     <string name="stop_capture">Stop Capture</string>
     <string name="gallery">Gallery</string>
     <string name="album">Album</string>
+    <string name="create_new_palette">Create a new palette</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="manually_add_colors">Manually Add Colors</string>
 </resources>
