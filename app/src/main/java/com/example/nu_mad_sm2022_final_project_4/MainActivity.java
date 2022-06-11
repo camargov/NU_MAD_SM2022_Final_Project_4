@@ -5,8 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, IAddFragment {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, IAddFragment, IToastFromFragmentToMain {
     final String FAVORITE_FRAGMENT = "FAVORITE_FRAGMENT";
     final String CREATE_PALETTE_OPTIONS_FRAGMENT = "CREATE_PALETTE_OPTIONS_FRAGMENT";
     final String CAMERA_FRAGMENT = "CAMERA_FRAGMENT";
@@ -53,6 +54,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public void toastFromFragment(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void addCameraFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentConstraintLayout, CameraFragment.newInstance(), CAMERA_FRAGMENT)
@@ -72,4 +78,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .replace(R.id.fragmentConstraintLayout, CreatePaletteManuallyFragment.newInstance(), CREATE_PALETTE_MANUALLY_FRAGMENT)
                 .commit();
     }
+
+
 }
