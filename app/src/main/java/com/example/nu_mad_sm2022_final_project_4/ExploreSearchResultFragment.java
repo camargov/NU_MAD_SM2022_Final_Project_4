@@ -4,10 +4,12 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ExploreSearchResultFragment extends Fragment implements View.OnClickListener {
@@ -15,8 +17,11 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
     private ColorPalette colorPalette;
 
     // UI Elements
-    TextView textViewPaletteName, textViewHex, textViewRGB, textViewCMYK;
-    Button buttonSavePalette;
+    private TextView textViewPaletteName, textViewHex, textViewRGB, textViewCMYK;
+    private Button buttonSavePalette;
+    private LinearLayout linearLayout;
+    private BigPaletteColorsAdapter adapter;
+
 
     public ExploreSearchResultFragment() {}
 
@@ -51,6 +56,13 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         textViewCMYK = view.findViewById(R.id.textViewExploreSearchResultCMYK);
         buttonSavePalette = view.findViewById(R.id.buttonExploreSearchResultSavePalette);
         buttonSavePalette.setOnClickListener(this);
+
+        // Setting up linearLayout
+        linearLayout = view.findViewById(R.id.linearLayoutExploreSearchResult);
+        adapter = new BigPaletteColorsAdapter(this.getContext(), colorPalette.GetColors());
+        for(int i = 0; i < adapter.getCount(); i++) {
+            linearLayout.addView(adapter.getView(i, null, linearLayout));
+        }
 
         return view;
     }

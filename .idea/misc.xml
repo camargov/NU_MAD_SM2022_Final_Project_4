@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.274534717504529" />
+        <entry key="app/src/main/res/layout/big_palette_color_view.xml" value="0.20432303910801358" />
         <entry key="app/src/main/res/layout/create_palette_manually_add_color.xml" value="0.3584499417104982" />
         <entry key="app/src/main/res/layout/explore_search_color_row.xml" value="0.3568812417342524" />
         <entry key="app/src/main/res/layout/fragment_camera.xml" value="0.3072916666666667" />
