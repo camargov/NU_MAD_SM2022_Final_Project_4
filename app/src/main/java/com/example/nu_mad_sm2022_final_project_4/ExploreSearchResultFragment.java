@@ -32,8 +32,6 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
     //private mAuth;
     //private FirebaseUser mUser;
 
-
-
     public ExploreSearchResultFragment() {}
 
     public static ExploreSearchResultFragment newInstance(ColorPalette colorPalette) {
@@ -61,7 +59,6 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         // Defining UI Elements
         textViewPaletteName = view.findViewById(R.id.textViewExploreSearchResultPaletteName);
         textViewPaletteName.setText(colorPalette.GetName());
-        // convert colors to hex, rgb, cmyk
         textViewHex = view.findViewById(R.id.textViewExploreSearchResultHex);
         textViewRGB = view.findViewById(R.id.textViewExploreSearchResultRGB);
         textViewCMYK = view.findViewById(R.id.textViewExploreSearchResultCMYK);
@@ -76,6 +73,10 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
             linearLayout.addView(adapter.getView(i, null, linearLayout));
         }
         return view;
+    }
+
+    private void setTextViewColorInformation() {
+        // convert color to hex, rgb, cmyk
     }
 
     @Override
@@ -106,6 +107,7 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         Integer num = paletteColorClickActionListener.getExploreSearchResultColorInformation();
         constraintLayoutSelectedColor.setBackgroundColor(num);
         Log.d("demo", "bigPaletteColorClickResponse: " + num);
+        setTextViewColorInformation();
     }
 
     /*
