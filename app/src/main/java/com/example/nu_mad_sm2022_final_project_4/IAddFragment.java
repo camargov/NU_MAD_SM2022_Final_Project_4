@@ -5,4 +5,5 @@ public interface IAddFragment {
     void addDisplayPhotoGalleryFragment();
     void addCreatePaletteManuallyFragment();
     void addExploreSearchResultFragment(ColorPalette palette);
+    void addCreatePaletteOptionsFragment();
 }

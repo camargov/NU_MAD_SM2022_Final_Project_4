@@ -33,8 +33,6 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     private EditText editTextPaletteName, editTextColorHexCode;
     private Button buttonSave, buttonAdd;
     private TextView textViewAddColorHex;
-    private LinearLayout linearLayout;
-    private PaletteColorsViewAdapter linearLayoutAdapter;
 
     // RecyclerView-related items
     private RecyclerView recyclerView;
@@ -69,14 +67,6 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         buttonSave = view.findViewById(R.id.buttonCreatePaletteManuallySave);
         buttonSave.setOnClickListener(this);
 
-        // Setting up linear layout
-       /*linearLayout = view.findViewById(R.id.linearLayoutCreatePaletteManually);
-        linearLayoutAdapter = new PaletteColorsViewAdapter(this.getContext(), getColorsIntList());
-        for(int i = 0; i < linearLayoutAdapter.getCount(); i++) {
-            linearLayout.addView(linearLayoutAdapter.getView(i, null, linearLayout));
-        }
-        */
-
         // Setting up recyclerview
         recyclerView = view.findViewById(R.id.recyclerViewCreatePaletteManually);
         recyclerViewLayoutManager = new LinearLayoutManager(getActivity());
@@ -101,7 +91,27 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.buttonCreatePaletteManuallySave) {
-            // save palette to user's database
+            if (colors.size() == 0) {
+                toastListener.toastFromFragment("Palette must have at least one color.");
+            }
+            else {
+                if (editTextPaletteName.getText().toString().equals("")) {
+                    toastListener.toastFromFragment("Palette must have a name");
+                }
+                else {
+                    // Saving palette to user's collection of palettes
+                    /*
+                    db.collection("users")
+                    .document(mUser.getEmail())
+                    .collection("palettes")
+                    .document()
+                    .set(
+                    new ColorPalette(editTextPaletteName.getText.toString(),
+                    convertColorsToInt());
+                     */
+                    fragmentListener.addCreatePaletteOptionsFragment();
+                }
+            }
         }
         else if (v.getId() == R.id.buttonCreatePaletteManuallyAdd) {
             addHexFormat(editTextColorHexCode.getText().toString());
@@ -123,8 +133,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
                     else {
                         colors.set(colorPosition, editTextColorHexCode.getText().toString());
                     }
-                    //linearLayoutAdapter.notifyDataSetChanged();
-                    //linearLayout.addView(linearLayoutAdapter.getView(colors.size() - 1, null, linearLayout));
+
                     // Resetting the UI elements
                     textViewAddColorHex.setText("Add Color Hex Code");
                     buttonAdd.setText("Add");
@@ -158,11 +167,10 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         colorPosition = position;
     }
 
-    // Converts the list of colors from a String to an Integer
-    private List<Integer> getColorsIntList() {
+    private List<Integer> convertColorsToInt() {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < colors.size(); i++) {
-            list.add(Integer.decode(colors.get(i)));
+            list.add(Integer.parseInt(colors.get(i), 16));
         }
         return list;
     }

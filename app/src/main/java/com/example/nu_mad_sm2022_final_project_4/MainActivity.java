@@ -87,5 +87,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .commit();
     }
 
+    @Override
+    public void addCreatePaletteOptionsFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentConstraintLayout, CreatePaletteOptionsFragment.newInstance(), CREATE_PALETTE_OPTIONS_FRAGMENT)
+                .commit();
+    }
+
 
 }
