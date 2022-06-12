@@ -1,6 +1,7 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,10 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CreatePaletteManuallyFragment extends Fragment implements View.OnClickListener {
     private IAddFragment fragmentListener;
@@ -30,10 +33,12 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     private EditText editTextPaletteName, editTextColorHexCode;
     private Button buttonSave, buttonAdd;
     private TextView textViewAddColorHex;
+    private LinearLayout linearLayout;
+    private PaletteColorsViewAdapter linearLayoutAdapter;
 
     // RecyclerView-related items
     private RecyclerView recyclerView;
-    private AddColorManuallyAdapter adapter;
+    private AddColorManuallyAdapter recyclerViewAdapter;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
     private ArrayList<String> colors = new ArrayList<>();
 
@@ -64,12 +69,20 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         buttonSave = view.findViewById(R.id.buttonCreatePaletteManuallySave);
         buttonSave.setOnClickListener(this);
 
+        // Setting up linear layout
+       /*linearLayout = view.findViewById(R.id.linearLayoutCreatePaletteManually);
+        linearLayoutAdapter = new PaletteColorsViewAdapter(this.getContext(), getColorsIntList());
+        for(int i = 0; i < linearLayoutAdapter.getCount(); i++) {
+            linearLayout.addView(linearLayoutAdapter.getView(i, null, linearLayout));
+        }
+        */
+
         // Setting up recyclerview
         recyclerView = view.findViewById(R.id.recyclerViewCreatePaletteManually);
         recyclerViewLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
-        adapter = new AddColorManuallyAdapter(colors, this);
-        recyclerView.setAdapter(adapter);
+        recyclerViewAdapter = new AddColorManuallyAdapter(colors, this);
+        recyclerView.setAdapter(recyclerViewAdapter);
 
         return view;
     }
@@ -110,6 +123,9 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
                     else {
                         colors.set(colorPosition, editTextColorHexCode.getText().toString());
                     }
+                    //linearLayoutAdapter.notifyDataSetChanged();
+                    //linearLayout.addView(linearLayoutAdapter.getView(colors.size() - 1, null, linearLayout));
+                    // Resetting the UI elements
                     textViewAddColorHex.setText("Add Color Hex Code");
                     buttonAdd.setText("Add");
                     editTextColorHexCode.setText("");
@@ -123,7 +139,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
                         colors.add(hexCode);
                     }
                 }
-                adapter.notifyDataSetChanged();
+                recyclerViewAdapter.notifyDataSetChanged();
             }
             else {
                 toastListener.toastFromFragment("Invalid Character. Hex Characters: 0-9 and A-F");
@@ -140,5 +156,14 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         buttonAdd.setText("Save");
         editTextColorHexCode.setText(colors.get(position));
         colorPosition = position;
+    }
+
+    // Converts the list of colors from a String to an Integer
+    private List<Integer> getColorsIntList() {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < colors.size(); i++) {
+            list.add(Integer.decode(colors.get(i)));
+        }
+        return list;
     }
 }
