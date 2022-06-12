@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     final String DISPLAY_PHOTO_GALLERY_FRAGMENT = "DISPLAY_PHOTO_GALLERY_FRAGMENT";
     final String CREATE_PALETTE_MANUALLY_FRAGMENT = "CREATE_PALETTE_MANUALLY_FRAGMENT";
     final String EXPLORE_FRAGMENT = "EXPLORE_FRAGMENT";
+    final String EXPLORE_SEARCH_RESULT_FRAGMENT = "EXPLORE_SEARCH_RESULT_FRAGMENT";
     private ImageView imageViewFavorite, imageViewAddPalette, imageViewExplore;
 
     @Override
@@ -76,6 +77,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void addCreatePaletteManuallyFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentConstraintLayout, CreatePaletteManuallyFragment.newInstance(), CREATE_PALETTE_MANUALLY_FRAGMENT)
+                .commit();
+    }
+
+    @Override
+    public void addExploreSearchResultFragment(ColorPalette palette) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentConstraintLayout, ExploreSearchResultFragment.newInstance(palette), EXPLORE_SEARCH_RESULT_FRAGMENT)
                 .commit();
     }
 

@@ -33,4 +33,8 @@
     <string name="manually_add_colors">Manually Add Colors</string>
     <string name="add_color_hex_code">Add Color Hex Code</string>
     <string name="current_list_of_colors">Current List of Colors:</string>
+    <string name="save_palette">Save Palette</string>
+    <string name="hex_label">Hex:</string>
+    <string name="rgb_label">RGB:</string>
+    <string name="cmyk_label">CMYK:</string>
 </resources>
