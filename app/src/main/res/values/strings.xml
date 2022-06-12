@@ -37,4 +37,5 @@
     <string name="hex_label">Hex:</string>
     <string name="rgb_label">RGB:</string>
     <string name="cmyk_label">CMYK:</string>
+    <string name="selected_color">Selected Color:</string>
 </resources>
