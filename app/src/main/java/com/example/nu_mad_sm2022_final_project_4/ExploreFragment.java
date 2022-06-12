@@ -1,8 +1,10 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,22 +13,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class ExploreFragment extends Fragment implements SearchView.OnQueryTextListener {
+public class ExploreFragment extends Fragment implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
+    private IAddFragment fragmentListener;
+
     // UI Elements
     private SearchView searchView;
     private TextView textViewSearchWord, textViewSearchResultsFor;
-
-    // RecyclerView-related items
-    private RecyclerView recyclerView;
-    private ExploreSearchAdapter adapter;
-    private RecyclerView.LayoutManager recyclerViewLayoutManager;
-    private ArrayList<ColorPalette> searchResults = new ArrayList<>();
+    private List<ColorPalette> searchResults = new ArrayList<>();
+    private ListView listView;
+    PaletteListEntryAdapter adapter;
 
     public ExploreFragment() {}
 
@@ -66,14 +69,21 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
         textViewSearchResultsFor = view.findViewById(R.id.textViewExploreSearchResultsFor);
         textViewSearchResultsFor.setVisibility(View.INVISIBLE);
 
-        // Setting up recyclerview
-        recyclerView = view.findViewById(R.id.recyclerViewExplore);
-        recyclerViewLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(recyclerViewLayoutManager);
-        adapter = new ExploreSearchAdapter(searchResults, getActivity());
-        recyclerView.setAdapter(adapter);
+        // Setting up listView
+        listView = view.findViewById(R.id.listViewExplore);
+        adapter = new PaletteListEntryAdapter(this.getContext(), searchResults);
+        this.listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
         return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof IAddFragment) {
+            fragmentListener = (IAddFragment) context;
+        }
     }
 
     @Override
@@ -90,5 +100,10 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
     public boolean onQueryTextChange(String newText) {
         // update suggestion list
         return false;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        fragmentListener.addExploreSearchResultFragment(searchResults.get(position));
     }
 }
