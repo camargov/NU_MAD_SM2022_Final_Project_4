@@ -1,8 +1,11 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -13,7 +16,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class CreatePaletteFromImageFragment extends Fragment implements View.OnClickListener {
+    private IToastFromFragmentToMain toastListener;
+    private IAddFragment fragmentListener;
     /*private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private String mParam1;
@@ -21,10 +28,14 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
     // UI Elements:
     private EditText editTextPaletteName;
-    private Button buttonSeeMore, buttonSave;
+    private Button buttonSeeMorePalettes, buttonSave;
     private ImageView imageView;
-    private TextView textViewMainColors;
-    private RecyclerView recyclerViewSuggestedPalettes;
+
+    // Setting up recyclerView
+    private RecyclerView recyclerViewProminentColors;
+    private ColorDescriptionRowAdapter recyclerViewAdapter;
+    private RecyclerView.LayoutManager recyclerViewLayoutManager;
+    private ArrayList<Integer> colors = new ArrayList<>();
 
     public CreatePaletteFromImageFragment() {}
 
@@ -53,24 +64,59 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
         // Defining UI Elements:
         editTextPaletteName = view.findViewById(R.id.editTextCreatePaletteFromImageName);
-        buttonSeeMore = view.findViewById(R.id.buttonCreatePaletteFromImageSeeMore);
+        buttonSeeMorePalettes = view.findViewById(R.id.buttonCreatePaletteFromImageSeeMorePalettes);
         buttonSave = view.findViewById(R.id.buttonCreatePaletteFromImageSave);
         imageView = view.findViewById(R.id.imageViewCreatePaletteFromImage);
-        textViewMainColors = view.findViewById(R.id.textViewCreatePaletteFromImageMainColors);
-        recyclerViewSuggestedPalettes = view.findViewById(R.id.recyclerViewCreatePaletteFromImageSuggestedPalettes);
-        buttonSeeMore.setOnClickListener(this);
+        buttonSeeMorePalettes.setOnClickListener(this);
         buttonSave.setOnClickListener(this);
+
+        // Set up colors array
+
+        // Setting up recyclerView
+        recyclerViewProminentColors = view.findViewById(R.id.recyclerViewCreatePaletteFromImageProminentColors);
+        recyclerViewLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerViewProminentColors.setLayoutManager(recyclerViewLayoutManager);
+        recyclerViewAdapter = new ColorDescriptionRowAdapter(colors);
+        recyclerViewProminentColors.setAdapter(recyclerViewAdapter);
 
         return view;
     }
 
     @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.buttonCreatePaletteFromImageSeeMore) {
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
 
+        if (context instanceof IToastFromFragmentToMain) {
+            toastListener = (IToastFromFragmentToMain) context;
+        }
+        if (context instanceof IAddFragment) {
+            fragmentListener = (IAddFragment) context;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.buttonCreatePaletteFromImageSeeMorePalettes) {
+            // pass this to the next fragment for when user chooses another palette or for a back button
+            fragmentListener.addCreatePaletteFromImageSeeMorePalettesFragment();
         }
         else if (v.getId() == R.id.buttonCreatePaletteFromImageSave) {
+            if (editTextPaletteName.getText().toString().equals("")) {
+                toastListener.toastFromFragment("Palette must have a name.");
+            }
+            else {
+                /*
+            Map<String, Object> palette = new HashMap<>();
+            palette.put("name", editTextPaletteName.getText().toString());
+            palette.put("colors", colors);
+            palette.put("image", );
 
+            db.collection("users)
+            .document(mUser.getEmail())
+            .collection("palettes")
+            .set(palette);
+             */
+            }
         }
     }
 }

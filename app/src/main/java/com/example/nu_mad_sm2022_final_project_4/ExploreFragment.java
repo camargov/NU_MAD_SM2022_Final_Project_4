@@ -29,7 +29,7 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
     private TextView textViewSearchWord, textViewSearchResultsFor;
     private List<ColorPalette> searchResults = new ArrayList<>();
     private ListView listView;
-    PaletteListEntryAdapter adapter;
+    private PaletteListEntryAdapter adapter;
 
     public ExploreFragment() {}
 
