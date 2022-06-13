@@ -14,11 +14,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import java.util.List;
 
 public class BigPaletteColorsAdapter extends ArrayAdapter<Integer> {
-    private IBigPaletteColorClickAction colorClickActionListener;
 
     public BigPaletteColorsAdapter(@NonNull Context context, @NonNull List<Integer> colors) {
         super(context, 0, colors);
-        colorClickActionListener = (IBigPaletteColorClickAction) context;
     }
 
     @NonNull
@@ -32,12 +30,6 @@ public class BigPaletteColorsAdapter extends ArrayAdapter<Integer> {
 
         ConstraintLayout constraint = convertView.findViewById(R.id.constraintLayoutBigPaletteColorViewContainer);
         constraint.setBackgroundColor(color);
-        constraint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                colorClickActionListener.setExploreSearchResultColorInformation(getItem(position));
-            }
-        });
 
         return convertView;
     }

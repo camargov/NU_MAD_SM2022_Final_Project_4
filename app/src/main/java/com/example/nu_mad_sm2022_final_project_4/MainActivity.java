@@ -11,7 +11,7 @@ import android.widget.Toast;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IAddFragment,
-        IToastFromFragmentToMain, IBigPaletteColorClickAction {
+        IToastFromFragmentToMain {
     final String FAVORITE_FRAGMENT = "FAVORITE_FRAGMENT";
     final String CREATE_PALETTE_OPTIONS_FRAGMENT = "CREATE_PALETTE_OPTIONS_FRAGMENT";
     final String CAMERA_FRAGMENT = "CAMERA_FRAGMENT";
@@ -21,8 +21,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     final String EXPLORE_FRAGMENT = "EXPLORE_FRAGMENT";
     final String EXPLORE_SEARCH_RESULT_FRAGMENT = "EXPLORE_SEARCH_RESULT_FRAGMENT";
     private ImageView imageViewFavorite, imageViewAddPalette, imageViewExplore;
-    private Integer bigPaletteColor;
-    private IResponseToBigPaletteColorClickAction fragmentResponseToBigPaletteColorClick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,17 +65,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void setExploreSearchResultColorInformation(Integer color) {
-        bigPaletteColor = color;
-        fragmentResponseToBigPaletteColorClick.bigPaletteColorClickResponse();
-    }
-
-    @Override
-    public Integer getExploreSearchResultColorInformation() {
-        return bigPaletteColor;
-    }
-
-    @Override
     public void addCameraFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentConstraintLayout, CameraFragment.newInstance(), CAMERA_FRAGMENT)
@@ -100,11 +87,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void addExploreSearchResultFragment(ColorPalette palette) {
-        ExploreSearchResultFragment responseFragment = ExploreSearchResultFragment.newInstance(palette);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentConstraintLayout, responseFragment, EXPLORE_SEARCH_RESULT_FRAGMENT)
+                .add(R.id.fragmentConstraintLayout, ExploreSearchResultFragment.newInstance(palette), EXPLORE_SEARCH_RESULT_FRAGMENT)
+                .addToBackStack(null)
                 .commit();
-        this.fragmentResponseToBigPaletteColorClick = responseFragment;
     }
 
     @Override

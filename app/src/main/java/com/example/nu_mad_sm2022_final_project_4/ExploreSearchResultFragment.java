@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,17 +17,21 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class ExploreSearchResultFragment extends Fragment implements View.OnClickListener, IResponseToBigPaletteColorClickAction {
+import java.util.ArrayList;
+
+public class ExploreSearchResultFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_COLOR_PALETTE = "ARG_COLOR_PALETTE";
     private ColorPalette colorPalette;
-    private IBigPaletteColorClickAction paletteColorClickActionListener;
 
     // UI Elements
-    private TextView textViewPaletteName, textViewHex, textViewRGB, textViewCMYK;
+    private TextView textViewPaletteName;
     private Button buttonSavePalette;
     private LinearLayout linearLayout;
-    private BigPaletteColorsAdapter adapter;
-    private ConstraintLayout constraintLayoutSelectedColor;
+    private BigPaletteColorsAdapter linearLayoutAdapter;
+    private RecyclerView recyclerView;
+    private ColorDescriptionRowAdapter recyclerViewAdapter;
+    private RecyclerView.LayoutManager recyclerViewLayoutManager;
+    private ArrayList<Integer> colors = new ArrayList<>();
 
     // Firestore-related items
     //private db;
@@ -59,33 +65,32 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         // Defining UI Elements
         textViewPaletteName = view.findViewById(R.id.textViewExploreSearchResultPaletteName);
         textViewPaletteName.setText(colorPalette.GetName());
-        textViewHex = view.findViewById(R.id.textViewExploreSearchResultHex);
-        textViewRGB = view.findViewById(R.id.textViewExploreSearchResultRGB);
-        textViewCMYK = view.findViewById(R.id.textViewExploreSearchResultCMYK);
         buttonSavePalette = view.findViewById(R.id.buttonExploreSearchResultSavePalette);
         buttonSavePalette.setOnClickListener(this);
-        constraintLayoutSelectedColor = view.findViewById(R.id.constraintLayoutExploreSearchResultSelectedColor);
+
+        // Setting up recyclerView
+        recyclerView = view.findViewById(R.id.recyclerViewExploreSearchResult);
+        recyclerViewLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(recyclerViewLayoutManager);
+        for (Integer i: colorPalette.GetColors()) {
+            colors.add(i);
+        }
+        recyclerViewAdapter = new ColorDescriptionRowAdapter(colors);
+        recyclerView.setAdapter(recyclerViewAdapter);
 
         // Setting up linearLayout
         linearLayout = view.findViewById(R.id.linearLayoutExploreSearchResult);
-        adapter = new BigPaletteColorsAdapter(this.getContext(), colorPalette.GetColors());
-        for(int i = 0; i < adapter.getCount(); i++) {
-            linearLayout.addView(adapter.getView(i, null, linearLayout));
+        linearLayoutAdapter = new BigPaletteColorsAdapter(this.getContext(), colorPalette.GetColors());
+        for(int i = 0; i < linearLayoutAdapter.getCount(); i++) {
+            linearLayout.addView(linearLayoutAdapter.getView(i, null, linearLayout));
         }
-        return view;
-    }
 
-    private void setTextViewColorInformation() {
-        // convert color to hex, rgb, cmyk
+        return view;
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-        if (context instanceof IBigPaletteColorClickAction) {
-            paletteColorClickActionListener = (IBigPaletteColorClickAction) context;
-        }
     }
 
     @Override
@@ -98,52 +103,11 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
             .collection("palettes")
             .document()
             .set(colorPalette);
+
+            // after saving is successful, go back to explore page with search results
+             (pop back this fragment)
              */
+            getActivity().getSupportFragmentManager().popBackStack();
         }
     }
-
-    @Override
-    public void bigPaletteColorClickResponse() {
-        Integer num = paletteColorClickActionListener.getExploreSearchResultColorInformation();
-        constraintLayoutSelectedColor.setBackgroundColor(num);
-        Log.d("demo", "bigPaletteColorClickResponse: " + num);
-        setTextViewColorInformation();
-    }
-
-    /*
-    public class RgbToCmyk {
-        public static void main(String args[]) {
-            double red = 50;
-            double green = 60;
-            double blue = 90;
-            double white = 0;
-
-            double cyan = 0;
-            double magenta = 0;
-            double yellow = 0;
-            double black = 0;
-            if (red == 0 && green == 0 && blue == 0) {
-                black = 1;//from ww w.j a  va2 s.co m
-
-            } else {
-                if ((red / 255) > (green / 255) && (red / 255) > (blue / 255)) {
-                    white = red / 255;
-                } else if ((green / 255) > (blue / 255)) {
-                    white = green / 255;
-                } else {
-                    white = blue / 255;
-                }
-
-                cyan = (white - (red / 255)) / white;
-                magenta = (white - (green / 255)) / white;
-                yellow = (white - (blue / 255)) / white;
-                black = (1 - white);
-
-            }
-            System.out.println("cyan value is " + cyan);
-            System.out.println("magenta value is" + magenta);
-            System.out.println("yellow value is" + yellow);
-            System.out.println("black value is " + black);
-        }
-    }*/
 }
