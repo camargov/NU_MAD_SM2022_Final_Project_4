@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     final String CAMERA_FRAGMENT = "CAMERA_FRAGMENT";
     final String DISPLAY_PHOTO_GALLERY_FRAGMENT = "DISPLAY_PHOTO_GALLERY_FRAGMENT";
     final String CREATE_PALETTE_MANUALLY_FRAGMENT = "CREATE_PALETTE_MANUALLY_FRAGMENT";
+    final String CREATE_PALETTE_FROM_IMAGE_SEE_MORE_PALETTES_FRAGMENT = "CREATE_PALETTE_FROM_IMAGE_SEE_MORE_PALETTES_FRAGMENT";
     final String EXPLORE_FRAGMENT = "EXPLORE_FRAGMENT";
     final String EXPLORE_SEARCH_RESULT_FRAGMENT = "EXPLORE_SEARCH_RESULT_FRAGMENT";
     private ImageView imageViewFavorite, imageViewAddPalette, imageViewExplore;
@@ -110,6 +111,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void addCreatePaletteOptionsFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentConstraintLayout, CreatePaletteOptionsFragment.newInstance(), CREATE_PALETTE_OPTIONS_FRAGMENT)
+                .commit();
+    }
+
+    @Override
+    public void addCreatePaletteFromImageSeeMorePalettesFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragmentConstraintLayout, CreatePaletteFromImageSeeMorePalettesFragment.newInstance(), CREATE_PALETTE_FROM_IMAGE_SEE_MORE_PALETTES_FRAGMENT)
+                .addToBackStack(null)
                 .commit();
     }
 }

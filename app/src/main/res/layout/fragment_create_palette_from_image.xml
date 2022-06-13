@@ -31,14 +31,14 @@
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <Button
-        android:id="@+id/buttonCreatePaletteFromImageSeeMore"
+        android:id="@+id/buttonCreatePaletteFromImageSeeMorePalettes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="@string/button_seeMore"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextCreatePaletteFromImageName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/editTextCreatePaletteFromImageName" />
+        android:layout_marginStart="24dp"
+        android:text="@string/see_more_palettes"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonCreatePaletteFromImageSave"
+        app:layout_constraintStart_toEndOf="@+id/buttonCreatePaletteFromImageSave"
+        app:layout_constraintTop_toTopOf="@+id/buttonCreatePaletteFromImageSave" />
 
     <TextView
         android:id="@+id/textView2"
@@ -51,44 +51,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCreatePaletteFromImage" />
 
-    <TextView
-        android:id="@+id/textViewCreatePaletteFromImageMainColors"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="#000000, #000000, #000000, #000000"
-        app:layout_constraintStart_toStartOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/textView_suggestedColorPalettes"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/textViewCreatePaletteFromImageMainColors"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCreatePaletteFromImageMainColors" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewCreatePaletteFromImageSuggestedPalettes"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonCreatePaletteFromImageSave"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/textView4"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
     <Button
         android:id="@+id/buttonCreatePaletteFromImageSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="55dp"
         android:layout_marginBottom="32dp"
         android:text="@string/button_save"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewCreatePaletteFromImageProminentColors"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCreatePaletteFromImageSave"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 </androidx.constraintlayout.widget.ConstraintLayout>
