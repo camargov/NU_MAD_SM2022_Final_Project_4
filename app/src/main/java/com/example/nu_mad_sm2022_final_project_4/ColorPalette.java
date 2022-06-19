@@ -7,12 +7,18 @@ import java.util.List;
 public class ColorPalette implements Serializable {
     private String name;
     private List<Integer> colors;
+    private String userId;
 
     public ColorPalette() {}
 
-    public ColorPalette(String name, List<Integer> colors) {
+    public ColorPalette(String name, String userId, List<Integer> colors) {
         this.name = name;
+        this.userId = userId;
         this.colors = new ArrayList<>(colors);
+    }
+
+    public ColorPalette(String name, List<Integer> colors) {
+        this(name, "", colors);
     }
 
     public ColorPalette(String name) {
