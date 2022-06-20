@@ -1,12 +1,24 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -17,13 +29,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Utils {
     private static JsonArray localPaletteDataCache;
@@ -69,13 +85,7 @@ public class Utils {
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             List<ColorPalette> palettes = new ArrayList<>();
             for(DocumentSnapshot d : queryDocumentSnapshots) {
-                Map<String, Object> paletteData = d.getData();
-                ColorPalette palette = new ColorPalette(
-                        (String)paletteData.get("name"),
-                        (String)paletteData.get("userId"),
-                        (List<Integer>)paletteData.get("colors")
-                );
-                palettes.add(palette);
+                palettes.add(paletteFromData(d.getData()));
             }
             onSuccess.apply(palettes);
         }).addOnFailureListener(e -> {
@@ -105,8 +115,7 @@ public class Utils {
     }
 
     public static List<ColorPalette> readPalettesLocally(Context context) throws IOException {
-        JsonArray paletteData = loadPaletteData(context);
-        return Arrays.asList(getGson().fromJson(paletteData, ColorPalette[].class));
+        return paletteListFromJson(loadPaletteData(context));
     }
 
     public static boolean paletteNameAvailable(Context context, String name) throws IOException {
@@ -160,5 +169,190 @@ public class Utils {
             return gsonCache;
         }
         return (gsonCache = new Gson());
+    }
+
+    // All palettes that are stored on the cloud should be stored locally,
+    // and all palettes that are stored locally and marked as "cloudPalette"
+    // should be on the cloud.
+    public static void syncLocalPaletteDataToCloud(Context context, Runnable onSuccess, Runnable onFail) throws IOException {
+        final List<ColorPalette> localPalettes = paletteListFromJson(loadPaletteData(context));
+        localPalettes.sort(Comparator.comparing(ColorPalette::getName));
+        final List<ColorPalette> markedCloudPalettes = localPalettes.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
+        String userId = getCurrentUserId();
+        Function<List<ColorPalette>, Void> palettesReceived = cloudPalettes -> {
+            boolean updateCloud = false;
+            boolean updateLocal = false;
+            List<ColorPalette> localCopy = new ArrayList<>(localPalettes);
+            List<ColorPalette> markedCopy = new ArrayList<>(markedCloudPalettes);
+            cloudPalettes.sort(Comparator.comparing(ColorPalette::getName));
+            if (checkForUnmarkedData(cloudPalettes)) {
+                updateCloud = true;
+                cloudPalettes = cloudPalettes.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
+            }
+            if (!checkSynced(localCopy, cloudPalettes)) {
+                updateLocal = true;
+                localCopy = combineData(cloudPalettes, localCopy);
+                markedCopy = localCopy.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
+            }
+            if (!checkSynced(cloudPalettes, markedCopy)) {
+                updateCloud =  true;
+                cloudPalettes = combineData(markedCopy, cloudPalettes);
+            }
+
+            if (updateLocal) {
+                try {
+                    overwritePaletteData(context, localCopy);
+                } catch(IOException e) {
+                    e.printStackTrace();
+                    onFail.run();
+                    return null;
+                }
+            }
+            if (updateCloud) {
+                overwriteCloudData(cloudPalettes, onSuccess, onFail);
+                return null;
+            }
+
+            onSuccess.run();
+            return null;
+        };
+
+        getUserPalettes(userId, palettesReceived, onFail);
+    }
+
+    // Are all the palettes in the latter list contained within the former list?
+    private static boolean checkSynced(List<ColorPalette> palettesA, List<ColorPalette> palettesB) {
+        int l = 0;
+        int c = 0;
+        while(l < palettesA.size() && c < palettesB.size()) {
+            ColorPalette localPalette = palettesA.get(l);
+            ColorPalette cloudPalette = palettesB.get(c);
+            if (cloudPalette.getName().equals(localPalette.getName())) {
+                c++;
+            }
+            l++;
+        }
+        return c >= palettesB.size();
+    }
+
+    private static boolean checkForUnmarkedData(List<ColorPalette> cloudPalettes) {
+        for(ColorPalette palette : cloudPalettes) {
+            if (!palette.getCloudPalette()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Sync the source to its destination
+    // If there are any name collisions, the source palette will
+    // replace the destination palette.
+    private static List<ColorPalette> combineData(List<ColorPalette> source, List<ColorPalette> destination) {
+        List<ColorPalette> resultSet = new ArrayList<>(source);
+        for(ColorPalette palette : destination) {
+            boolean collisionFound = false;
+            for(ColorPalette other : resultSet) {
+                if (other.getName().equals(palette.getName())) {
+                    collisionFound = true;
+                    break;
+                }
+            }
+            if (!collisionFound) {
+                resultSet.add(palette);
+            }
+        }
+        resultSet.sort(Comparator.comparing(ColorPalette::getName));
+        return resultSet;
+    }
+
+    private static void overwritePaletteData(Context context, List<ColorPalette> palettes) throws IOException {
+        JsonArray newData = (JsonArray) getGson().toJsonTree(palettes.toArray(), ColorPalette[].class);
+        syncPaletteData(context, newData);
+    }
+
+    private static void overwriteCloudData(List<ColorPalette> palettes, Runnable onSuccess, Runnable onFail) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("palettes")
+                .whereEqualTo("userId", getCurrentUserId())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<DocumentReference> refs = new ArrayList<>();
+                    List<ColorPalette> oldPalettes = new ArrayList<>();
+                    for(DocumentSnapshot document : queryDocumentSnapshots) {
+                        refs.add(document.getReference());
+                        oldPalettes.add(paletteFromData(document.getData()));
+                    }
+                    db.runTransaction((Transaction.Function<Void>) transaction -> {
+                        for(int i = 0; i < refs.size(); i++) {
+                            DocumentReference oldRef = refs.get(i);
+                            ColorPalette oldPalette = oldPalettes.get(i);
+                            if (listContainsPalette(palettes, oldPalette)) {
+                                transaction.set(oldRef, getMatchingPalette(palettes, oldPalette));
+                            } else {
+                                transaction.delete(oldRef);
+                            }
+                        }
+                        for(ColorPalette palette : palettes) {
+                            if (!listContainsPalette(oldPalettes, palette)) {
+                                transaction.set(db.collection("palettes").document(), palette);
+                            }
+                        }
+                        return null;
+                    })
+                            .addOnSuccessListener(unused -> onSuccess.run())
+                            .addOnFailureListener(e -> {
+                                e.printStackTrace();
+                                onFail.run();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    e.printStackTrace();
+                    onFail.run();
+                });
+    }
+
+                        // TODO: Make this return the actual user ID once we have user authentication set up.
+    public static String getCurrentUserId() {
+        return "testUserId";
+    }
+
+    private static List<ColorPalette> paletteListFromJson(JsonArray paletteData) {
+        return Arrays.asList(getGson().fromJson(paletteData, ColorPalette[].class));
+    }
+
+    private static ColorPalette paletteFromData(Map<String, Object> data) {
+        return new ColorPalette(
+                (String)data.get("name"),
+                (String)data.get("userId"),
+                data.containsKey("cloudPalette") ? (Boolean)data.get("cloudPalette") : false,
+                (List<Integer>)data.get("colors")
+        );
+    }
+
+    private static Map<String, Object> dataFromPalette(ColorPalette palette) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", palette.getName());
+        data.put("userId", palette.getUserId());
+        data.put("cloudPalette", palette.getCloudPalette());
+        data.put("color", palette.getColors());
+        return data;
+    }
+
+    private static boolean listContainsPalette(List<ColorPalette> list, ColorPalette palette) {
+        for(ColorPalette other : list) {
+            if (palette.getName().equals(other.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static ColorPalette getMatchingPalette(List<ColorPalette> list, ColorPalette palette) {
+        for(ColorPalette other : list) {
+            if (palette.getName().equals(other.getName())) {
+                return other;
+            }
+        }
+        return null;
     }
 }

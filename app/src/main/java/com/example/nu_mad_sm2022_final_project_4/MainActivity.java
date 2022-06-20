@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IAddFragment,
@@ -29,20 +30,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // FirebaseApp.initializeApp(this);
 
-        setContentView(R.layout.activity_main);
+        Runnable onSyncComplete = () -> {
+            setContentView(R.layout.activity_main);
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentConstraintLayout, FavoriteFragment.newInstance(), FAVORITE_FRAGMENT)
-                .commit();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragmentConstraintLayout, FavoriteFragment.newInstance(), FAVORITE_FRAGMENT)
+                    .commit();
 
-        imageViewFavorite = findViewById(R.id.imageViewFavorite);
-        imageViewAddPalette = findViewById(R.id.imageViewAddPalette);
-        imageViewExplore = findViewById(R.id.imageViewExplore);
-        imageViewFavorite.setOnClickListener(this);
-        imageViewAddPalette.setOnClickListener(this);
-        imageViewExplore.setOnClickListener(this);
+            imageViewFavorite = findViewById(R.id.imageViewFavorite);
+            imageViewAddPalette = findViewById(R.id.imageViewAddPalette);
+            imageViewExplore = findViewById(R.id.imageViewExplore);
+            imageViewFavorite.setOnClickListener(this);
+            imageViewAddPalette.setOnClickListener(this);
+            imageViewExplore.setOnClickListener(this);
+        };
+        try {
+            Utils.syncLocalPaletteDataToCloud(this, onSyncComplete, onSyncComplete);
+        } catch (IOException e) {
+            onSyncComplete.run();
+        }
     }
 
     @Override
