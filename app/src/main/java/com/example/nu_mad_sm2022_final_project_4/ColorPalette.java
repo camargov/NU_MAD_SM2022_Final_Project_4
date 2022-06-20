@@ -25,11 +25,11 @@ public class ColorPalette implements Serializable {
         this(name, new ArrayList<>());
     }
 
-    public String GetName() {
+    public String getName() {
         return this.name;
     }
 
-    public List<Integer> GetColors() {
+    public List<Integer> getColors() {
         return new ArrayList<>(this.colors);
     }
 
@@ -39,5 +39,13 @@ public class ColorPalette implements Serializable {
 
     public void setColors(List<Integer> colors) {
         this.colors = colors;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
