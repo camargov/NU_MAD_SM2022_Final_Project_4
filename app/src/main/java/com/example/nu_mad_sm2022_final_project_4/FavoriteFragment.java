@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -71,29 +72,13 @@ public class FavoriteFragment extends Fragment {
         getActivity().setTitle("Favorites");
 
         this.paletteList = view.findViewById(R.id.favorite_listView_palettes);
-        List<ColorPalette> palettes = new ArrayList<>();
-        palettes.add(this.makeTestPalette(
-                "Palette 1",
-                Color.RED,
-                Color.GREEN,
-                Color.BLUE
-        ));
-        palettes.add(this.makeTestPalette(
-                "Palette 2",
-                Color.CYAN,
-                Color.YELLOW,
-                Color.MAGENTA
-        ));
-        palettes.add(this.makeTestPalette(
-                "Palette 3",
-                Color.WHITE,
-                Color.LTGRAY,
-                Color.GRAY,
-                Color.DKGRAY,
-                Color.BLACK
-        ));
-        PaletteListEntryAdapter adapter = new PaletteListEntryAdapter(this.getContext(), palettes);
-        this.paletteList.setAdapter(adapter);
+        try {
+            List<ColorPalette> palettes = Utils.readPalettesLocally(this.getActivity());
+            PaletteListEntryAdapter adapter = new PaletteListEntryAdapter(this.getContext(), palettes);
+            this.paletteList.setAdapter(adapter);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return view;
     }

@@ -1,10 +1,12 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ColorPalette implements Serializable {
+public class ColorPalette implements Serializable, Cloneable {
     private String name;
     private List<Integer> colors;
     private String userId;
