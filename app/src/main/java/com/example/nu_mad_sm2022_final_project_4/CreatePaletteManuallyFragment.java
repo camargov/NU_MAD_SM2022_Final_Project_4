@@ -103,7 +103,8 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
                 else {
                     ColorPalette newPalette = new ColorPalette(
                         editTextPaletteName.getText().toString(),
-                        "testUserId",
+                        Utils.getCurrentUserId(),
+                        false,
                         convertColorsToInt()
                     );
                     // Upload to cloud
