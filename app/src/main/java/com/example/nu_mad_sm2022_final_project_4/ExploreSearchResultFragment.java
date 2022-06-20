@@ -4,12 +4,10 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +62,7 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
 
         // Defining UI Elements
         textViewPaletteName = view.findViewById(R.id.textViewExploreSearchResultPaletteName);
-        textViewPaletteName.setText(colorPalette.GetName());
+        textViewPaletteName.setText(colorPalette.getName());
         buttonSavePalette = view.findViewById(R.id.buttonExploreSearchResultSavePalette);
         buttonSavePalette.setOnClickListener(this);
 
@@ -72,7 +70,7 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         recyclerView = view.findViewById(R.id.recyclerViewExploreSearchResult);
         recyclerViewLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
-        for (Integer i: colorPalette.GetColors()) {
+        for (Integer i: colorPalette.getColors()) {
             colors.add(i);
         }
         recyclerViewAdapter = new ColorDescriptionRowAdapter(colors);
@@ -80,7 +78,7 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
 
         // Setting up linearLayout
         linearLayout = view.findViewById(R.id.linearLayoutExploreSearchResult);
-        linearLayoutAdapter = new BigPaletteColorsAdapter(this.getContext(), colorPalette.GetColors());
+        linearLayoutAdapter = new BigPaletteColorsAdapter(this.getContext(), colorPalette.getColors());
         for(int i = 0; i < linearLayoutAdapter.getCount(); i++) {
             linearLayout.addView(linearLayoutAdapter.getView(i, null, linearLayout));
         }

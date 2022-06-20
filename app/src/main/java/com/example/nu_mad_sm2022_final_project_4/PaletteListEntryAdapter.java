@@ -6,12 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
@@ -32,9 +30,9 @@ public class PaletteListEntryAdapter extends ArrayAdapter<ColorPalette> {
         TextView name = convertView.findViewById(R.id.paletteList_textView_name);
         LinearLayout colorList = convertView.findViewById(R.id.paletteList_linearLayout_palettes);
 
-        name.setText(palette.GetName());
+        name.setText(palette.getName());
 
-        PaletteColorsViewAdapter adapter = new PaletteColorsViewAdapter(this.getContext(), palette.GetColors());
+        PaletteColorsViewAdapter adapter = new PaletteColorsViewAdapter(this.getContext(), palette.getColors());
         for(int i = 0; i < adapter.getCount(); i++) {
             colorList.addView(adapter.getView(i, null, colorList));
         }
