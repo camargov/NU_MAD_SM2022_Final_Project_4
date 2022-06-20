@@ -99,17 +99,16 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
                     toastListener.toastFromFragment("Palette must have a name");
                 }
                 else {
-                    // Saving palette to user's collection of palettes
-                    /*
-                    db.collection("users")
-                    .document(mUser.getEmail())
-                    .collection("palettes")
-                    .document()
-                    .set(
-                    new ColorPalette(editTextPaletteName.getText.toString(),
-                    convertColorsToInt());
-                     */
-                    fragmentListener.addCreatePaletteOptionsFragment();
+                    ColorPalette newPalette = new ColorPalette(
+                        editTextPaletteName.getText().toString(),
+                        "testUserId",
+                        convertColorsToInt()
+                    );
+                    Utils.uploadPalette(newPalette,
+                            () -> getActivity().runOnUiThread(() -> fragmentListener.addCreatePaletteOptionsFragment()),
+                            () -> {
+                                // cry or something
+                            });
                 }
             }
         }
@@ -170,7 +169,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     private List<Integer> convertColorsToInt() {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < colors.size(); i++) {
-            list.add(Integer.parseInt(colors.get(i), 16));
+            list.add(Integer.parseInt(colors.get(i).substring(1), 16));
         }
         return list;
     }

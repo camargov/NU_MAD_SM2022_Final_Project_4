@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "898433295220",
+    "project_id": "patches-97bf3",
+    "storage_bucket": "patches-97bf3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:898433295220:android:f453079b5c494aba7bc221",
+        "android_client_info": {
+          "package_name": "com.example.nu_mad_sm2022_final_project_4"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "898433295220-3cguqlmpum0453utkt1jf1gdvbfcesro.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPsVQ8Tm6qLa4b3SGNVwR9g_3uZVs2VeM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "898433295220-3cguqlmpum0453utkt1jf1gdvbfcesro.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
