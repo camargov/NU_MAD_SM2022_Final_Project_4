@@ -169,7 +169,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     private List<Integer> convertColorsToInt() {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < colors.size(); i++) {
-            list.add(Integer.parseInt(colors.get(i), 16));
+            list.add(Integer.parseInt(colors.get(i).substring(1), 16));
         }
         return list;
     }

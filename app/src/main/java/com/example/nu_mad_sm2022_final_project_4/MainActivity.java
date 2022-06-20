@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IAddFragment,
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // FirebaseApp.initializeApp(this);
+
         setContentView(R.layout.activity_main);
 
         getSupportFragmentManager().beginTransaction()
