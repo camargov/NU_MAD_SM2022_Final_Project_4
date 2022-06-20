@@ -19,7 +19,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,11 +106,18 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
                         "testUserId",
                         convertColorsToInt()
                     );
-                    Utils.uploadPalette(newPalette,
-                            () -> getActivity().runOnUiThread(() -> fragmentListener.addCreatePaletteOptionsFragment()),
-                            () -> {
-                                // cry or something
-                            });
+                    // Upload to cloud
+//                    Utils.uploadPalette(newPalette,
+//                            () -> getActivity().runOnUiThread(() -> fragmentListener.addCreatePaletteOptionsFragment()),
+//                            () -> {
+//                                // cry or something
+//                            });
+                    // Store locally
+                    try {
+                        Utils.storePaletteLocally(getActivity(), newPalette);
+                    } catch(IOException e) {
+                        Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG);
+                    }
                 }
             }
         }
