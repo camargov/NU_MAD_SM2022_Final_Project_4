@@ -67,6 +67,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/editTextCreatePaletteManuallyColorHex"
             app:layout_constraintStart_toEndOf="@+id/editTextCreatePaletteManuallyColorHex"
             app:layout_constraintTop_toTopOf="@+id/editTextCreatePaletteManuallyColorHex" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
@@ -102,5 +103,17 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/constraintLayout"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <CheckBox
+        android:id="@+id/createPaletteManually_checkBox_makeCloud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Make Public"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonCreatePaletteManuallySave"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/buttonCreatePaletteManuallySave"
+        app:layout_constraintTop_toTopOf="@+id/buttonCreatePaletteManuallySave" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

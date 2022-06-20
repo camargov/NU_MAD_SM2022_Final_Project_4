@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -35,6 +36,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     private EditText editTextPaletteName, editTextColorHexCode;
     private Button buttonSave, buttonAdd;
     private TextView textViewAddColorHex;
+    private CheckBox makePublic;
 
     // RecyclerView-related items
     private RecyclerView recyclerView;
@@ -76,6 +78,8 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         recyclerViewAdapter = new AddColorManuallyAdapter(colors, this);
         recyclerView.setAdapter(recyclerViewAdapter);
 
+        makePublic = view.findViewById(R.id.createPaletteManually_checkBox_makeCloud);
+
         return view;
     }
 
@@ -101,27 +105,37 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
                     toastListener.toastFromFragment("Palette must have a name");
                 }
                 else {
+                    boolean makeCloud = makePublic.isChecked();
+                    String newName = editTextPaletteName.getText().toString();
                     ColorPalette newPalette = new ColorPalette(
-                        editTextPaletteName.getText().toString(),
+                        newName,
                         Utils.getCurrentUserId(),
-                        false,
+                        makeCloud,
                         convertColorsToInt()
                     );
-                    // Upload to cloud
-//                    Utils.uploadPalette(newPalette,
-//                            () -> getActivity().runOnUiThread(() -> fragmentListener.addCreatePaletteOptionsFragment()),
-//                            () -> {
-//                                // cry or something
-//                            });
-                    // Store locally
+
                     try {
-                        if (!Utils.storePaletteLocally(getActivity(), newPalette)) {
+                        if (!Utils.paletteNameAvailable(getActivity(), newName)) {
                             Toast.makeText(getActivity(), "Palette name is already taken", Toast.LENGTH_LONG).show();
-                        } else {
-                            fragmentListener.addCreatePaletteOptionsFragment();
+                            return;
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    try {
+                        Utils.storePaletteLocally(getActivity(), newPalette);
                     } catch(IOException e) {
                         Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
+                    }
+                    if (makeCloud) {
+                        Utils.uploadPalette(newPalette,
+                            () -> getActivity().runOnUiThread(() -> fragmentListener.addCreatePaletteOptionsFragment()),
+                            () -> getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Something went wrong; adding palette locally, try restarting later to re-sync public data with cloud", Toast.LENGTH_LONG).show()));
+                    } else {
+                        fragmentListener.addCreatePaletteOptionsFragment();
                     }
                 }
             }
