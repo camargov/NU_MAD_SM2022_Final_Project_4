@@ -1,5 +1,7 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
+import android.net.Uri;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -12,6 +14,10 @@ import java.util.function.Function;
 
 public class Utils {
     private Utils() { }
+
+    public interface IPhotoPicked {
+        void photoPicked(Uri photoUri);
+    }
 
     public static void getUserPalettes(String userId, Function<List<ColorPalette>, Void> onSuccess, Runnable onFail) {
         searchPalettes(userId, "", -1, onSuccess, onFail);

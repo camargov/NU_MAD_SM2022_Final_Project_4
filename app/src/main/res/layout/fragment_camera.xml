@@ -9,24 +9,24 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <Button
-        android:id="@+id/button_takePhoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/take_photo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <ImageView
         android:id="@+id/imageView_switchCamera"
-        android:layout_width="0dp"
+        android:layout_width="40dp"
         android:layout_height="0dp"
         android:src="@drawable/switch_camera_icon"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button_takePhoto"
-        app:layout_constraintTop_toTopOf="@+id/button_takePhoto" />
+        app:layout_constraintEnd_toEndOf="@+id/viewFinder"
+        app:layout_constraintTop_toBottomOf="@+id/viewFinder" />
+
+    <ImageView
+        android:id="@+id/imageView_takePhoto"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/camera_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/viewFinder"
+        app:layout_constraintStart_toStartOf="@+id/viewFinder"
+        app:layout_constraintTop_toBottomOf="@+id/viewFinder" />
 
     <Button
         android:id="@+id/button_albumDisplay"
@@ -35,23 +35,22 @@
         android:text="@string/album"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_takePhoto"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button_takePhoto" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="48dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/button_takePhoto"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         tools:visibility="visible">
 
     </androidx.camera.view.PreviewView>

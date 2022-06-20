@@ -60,7 +60,7 @@ public class CameraFragment extends Fragment {
 
     private ImageCapture imageCapture;
     private ExecutorService cameraExecutor;
-    private Button take_picture;
+    private ImageView take_picture;
     private Button goto_album;
     private ImageView switch_camera;
     private CameraSelector cameraSelector;
@@ -158,7 +158,7 @@ public class CameraFragment extends Fragment {
         startCamera();
 
         //Take a picture
-        take_picture = view.findViewById(R.id.button_takePhoto);
+        take_picture = view.findViewById(R.id.imageView_takePhoto);
         cameraExecutor = Executors.newSingleThreadExecutor();
         take_picture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,8 +172,10 @@ public class CameraFragment extends Fragment {
                                     @Override
                                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                                         Uri imageUri = outputFileResults.getSavedUri();
-
-
+                                        if(getActivity() instanceof Utils.IPhotoPicked){
+                                            Utils.IPhotoPicked photoPickInterface = (Utils.IPhotoPicked) getActivity();
+                                            photoPickInterface.photoPicked(imageUri);
+                                        }
                                     }
                                     @Override
                                     public void onError(ImageCaptureException error) {

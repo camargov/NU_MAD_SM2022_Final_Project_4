@@ -3,6 +3,7 @@ package com.example.nu_mad_sm2022_final_project_4;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,13 +14,14 @@ import com.google.firebase.FirebaseApp;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IAddFragment,
-        IToastFromFragmentToMain {
+        IToastFromFragmentToMain, Utils.IPhotoPicked {
     final String FAVORITE_FRAGMENT = "FAVORITE_FRAGMENT";
     final String CREATE_PALETTE_OPTIONS_FRAGMENT = "CREATE_PALETTE_OPTIONS_FRAGMENT";
     final String CAMERA_FRAGMENT = "CAMERA_FRAGMENT";
     final String DISPLAY_PHOTO_GALLERY_FRAGMENT = "DISPLAY_PHOTO_GALLERY_FRAGMENT";
     final String CREATE_PALETTE_MANUALLY_FRAGMENT = "CREATE_PALETTE_MANUALLY_FRAGMENT";
     final String CREATE_PALETTE_FROM_IMAGE_SEE_MORE_PALETTES_FRAGMENT = "CREATE_PALETTE_FROM_IMAGE_SEE_MORE_PALETTES_FRAGMENT";
+    final String CREATE_PALETTE_FROM_IMAGE_FRAGMENT = "CREATE_PALETTE_FROM_IMAGE_FRAGMENT";
     final String EXPLORE_FRAGMENT = "EXPLORE_FRAGMENT";
     final String EXPLORE_SEARCH_RESULT_FRAGMENT = "EXPLORE_SEARCH_RESULT_FRAGMENT";
     private ImageView imageViewFavorite, imageViewAddPalette, imageViewExplore;
@@ -61,6 +63,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .replace(R.id.fragmentConstraintLayout, ExploreFragment.newInstance(), EXPLORE_FRAGMENT)
                     .commit();
         }
+    }
+
+    public void photoPicked(Uri photoUri){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentConstraintLayout, CreatePaletteFromImageFragment.newInstance(photoUri), CREATE_PALETTE_FROM_IMAGE_FRAGMENT)
+                .commit();
     }
 
     @Override

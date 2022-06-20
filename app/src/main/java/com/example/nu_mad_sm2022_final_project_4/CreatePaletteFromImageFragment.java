@@ -1,6 +1,7 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,15 +17,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 public class CreatePaletteFromImageFragment extends Fragment implements View.OnClickListener {
+    private Uri image_uri;
     private IToastFromFragmentToMain toastListener;
     private IAddFragment fragmentListener;
-    /*private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private String mParam1;
-    private String mParam2;*/
 
     // UI Elements:
     private EditText editTextPaletteName;
@@ -37,10 +37,12 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
     private ArrayList<Integer> colors = new ArrayList<>();
 
-    public CreatePaletteFromImageFragment() {}
+    public CreatePaletteFromImageFragment(Uri image_uri) {
+        this.image_uri = image_uri;
+    }
 
-    public static CreatePaletteFromImageFragment newInstance() {
-        CreatePaletteFromImageFragment fragment = new CreatePaletteFromImageFragment();
+    public static CreatePaletteFromImageFragment newInstance(Uri image_uri) {
+        CreatePaletteFromImageFragment fragment = new CreatePaletteFromImageFragment(image_uri);
         Bundle args = new Bundle();
         //args.putString(ARG_PARAM1, param1);
         //args.putString(ARG_PARAM2, param2);
@@ -67,6 +69,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         buttonSeeMorePalettes = view.findViewById(R.id.buttonCreatePaletteFromImageSeeMorePalettes);
         buttonSave = view.findViewById(R.id.buttonCreatePaletteFromImageSave);
         imageView = view.findViewById(R.id.imageViewCreatePaletteFromImage);
+        Picasso.get().load(image_uri).into(imageView);
         buttonSeeMorePalettes.setOnClickListener(this);
         buttonSave.setOnClickListener(this);
 

@@ -1,11 +1,14 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,10 +63,24 @@ public class CreatePaletteOptionsFragment extends Fragment implements View.OnCli
             fragmentListener.addCameraFragment();
         }
         else if (v.getId() == R.id.buttonCreatePaletteOptionsAddPhoto) {
-            fragmentListener.addDisplayPhotoGalleryFragment();
+            Intent gallery_intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(gallery_intent,3);
+//            fragmentListener.addDisplayPhotoGalleryFragment();
         }
         else if (v.getId() == R.id.buttonCreatePaletteOptionsManuallyAddColors) {
             fragmentListener.addCreatePaletteManuallyFragment();
         }
     }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if(data !=null){
+            Uri selectedImage = data.getData();
+            if(getActivity() instanceof Utils.IPhotoPicked){
+                Utils.IPhotoPicked photoPickedInstance = (Utils.IPhotoPicked) getActivity();
+                photoPickedInstance.photoPicked(selectedImage);
+            }
+        }
+    }
+
 }
