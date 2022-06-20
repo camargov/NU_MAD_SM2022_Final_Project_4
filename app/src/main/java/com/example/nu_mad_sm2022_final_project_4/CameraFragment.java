@@ -1,7 +1,10 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +14,7 @@ import androidx.camera.core.CameraSelector;
 import androidx.camera.core.CameraProvider;
 import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.core.impl.PreviewConfig;
 import androidx.camera.core.impl.UseCaseConfig;
@@ -23,15 +27,24 @@ import androidx.fragment.app.Fragment;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.lifecycle.LifecycleOwner;
 
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.nu_mad_sm2022_final_project_4.databinding.ActivityMainBinding;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +62,9 @@ public class CameraFragment extends Fragment {
     private ExecutorService cameraExecutor;
     private Button take_picture;
     private Button goto_album;
+    private ImageView switch_camera;
+    private CameraSelector cameraSelector;
+    private boolean cameraBack;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
 
@@ -93,6 +109,13 @@ public class CameraFragment extends Fragment {
         return (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
                 PackageManager.PERMISSION_GRANTED);
     }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if(data !=null){
+            Uri selectedImage = data.getData();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,11 +123,19 @@ public class CameraFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         getActivity().setTitle("Add Palette");
-        take_picture = view.findViewById(R.id.button_takePhoto);
-        take_picture.setOnClickListener(new View.OnClickListener() {
+
+        switch_camera = view.findViewById(R.id.imageView_switchCamera);
+        switch_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Capture photo.
+                if(cameraBack){
+                    cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
+                } else {
+                    cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+                }
+                cameraBack = !cameraBack;
+                startCamera();
+
             }
         });
 
@@ -113,37 +144,57 @@ public class CameraFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //open up album
-                if(getActivity() instanceof iToGalleryHelper){
-                    iToGalleryHelper helper = (iToGalleryHelper) getActivity();
-                }
+                Intent gallery_intent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(gallery_intent,3);
             }
         });
 
 
 
+
         //Handles preview
         viewFinder = view.findViewById(R.id.viewFinder);
-        if (allPermissionsGranted()) {
-            viewBinding = ActivityMainBinding.inflate(getLayoutInflater());
-            cameraProviderFuture = ProcessCameraProvider.getInstance(getContext());
-            // Request camera permissions
-            cameraProviderFuture.addListener(() -> {
-                try {
-                    ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                    bindPreview(cameraProvider);
-                } catch (ExecutionException | InterruptedException e) {
-                    // Should never be reached
-                    Toast.makeText(getContext(), "Camera Provider not found. Something went very wrong.", Toast.LENGTH_SHORT).show();
-                }
-            }, ContextCompat.getMainExecutor(getContext()));
+        cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+        startCamera();
 
-        } else {
-            while(!allPermissionsGranted()) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
+        //Take a picture
+        take_picture = view.findViewById(R.id.button_takePhoto);
+        cameraExecutor = Executors.newSingleThreadExecutor();
+        take_picture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(allPermissionsGranted()){
+                    try {
+                        ImageCapture.OutputFileOptions outputFileOptions =
+                                new ImageCapture.OutputFileOptions.Builder(createImageFile()).build();
+                        imageCapture.takePicture(outputFileOptions, cameraExecutor,
+                                new ImageCapture.OnImageSavedCallback() {
+                                    @Override
+                                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                                        Uri imageUri = outputFileResults.getSavedUri();
+
+
+                                    }
+                                    @Override
+                                    public void onError(ImageCaptureException error) {
+                                        error.printStackTrace();
+                                        getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Unable to capture a photo.", Toast.LENGTH_SHORT).show());
+                                    }
+                                }
+                        );
+                    } catch (IOException e) {
+                        Log.d("CameraFragment", "Patches does not have the required permissions for camera functionality.");
+                    }
+                }
+
             }
-        }
+        });
+
         return view;
     }
+
+
+
 
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
         Preview preview = new Preview.Builder()
@@ -158,10 +209,48 @@ public class CameraFragment extends Fragment {
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview);
     }
 
+    private void startCamera(){
+        if(allPermissionsGranted()) {
+            cameraProviderFuture = ProcessCameraProvider.getInstance(getContext());
+            cameraProviderFuture.addListener(() -> {
+                try {
+                    ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                    cameraProvider.unbindAll();
+
+                    Preview preview = new Preview.Builder().build();
+
+                    imageCapture = new ImageCapture.Builder()
+//                            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                            .build();
+
+                    preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
+
+                    cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview, imageCapture);
+
+
+                } catch (ExecutionException | InterruptedException e) {
+                    // Should never be reached
+                    Toast.makeText(getContext(), "Camera Provider not found. Something went very wrong.", Toast.LENGTH_SHORT).show();
+                }
+            }, ContextCompat.getMainExecutor(getContext()));
+        }
+    }
+
     //interface for sending signal to activity
     public interface iToGalleryHelper {
         public void showGallery();
     }
 
+    private File createImageFile() throws IOException {
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = String.format("JPEG_%s_", timestamp);
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+        return image;
+    }
 
 }
