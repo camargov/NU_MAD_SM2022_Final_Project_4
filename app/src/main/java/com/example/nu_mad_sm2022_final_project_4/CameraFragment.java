@@ -61,7 +61,6 @@ public class CameraFragment extends Fragment {
     private ImageCapture imageCapture;
     private ExecutorService cameraExecutor;
     private ImageView take_picture;
-    private Button goto_album;
     private ImageView switch_camera;
     private CameraSelector cameraSelector;
     private boolean cameraBack;
@@ -109,13 +108,6 @@ public class CameraFragment extends Fragment {
         return (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
                 PackageManager.PERMISSION_GRANTED);
     }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
-        if(data !=null){
-            Uri selectedImage = data.getData();
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -136,16 +128,6 @@ public class CameraFragment extends Fragment {
                 cameraBack = !cameraBack;
                 startCamera();
 
-            }
-        });
-
-        goto_album = view.findViewById(R.id.button_albumDisplay);
-        goto_album.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //open up album
-                Intent gallery_intent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(gallery_intent,3);
             }
         });
 
