@@ -13,10 +13,13 @@
         android:id="@+id/imageView_switchCamera"
         android:layout_width="40dp"
         android:layout_height="0dp"
-        android:src="@drawable/switch_camera_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/viewFinder"
         app:layout_constraintTop_toBottomOf="@+id/viewFinder" />
+
+    <!-- This was broken
+
+                    Utils.storePaletteLocally(getActivity(), newPalette); -->
 
     <ImageView
         android:id="@+id/imageView_takePhoto"

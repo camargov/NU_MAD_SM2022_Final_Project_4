@@ -114,9 +114,13 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
 //                            });
                     // Store locally
                     try {
-                        Utils.storePaletteLocally(getActivity(), newPalette);
+                        if (!Utils.storePaletteLocally(getActivity(), newPalette)) {
+                            Toast.makeText(getActivity(), "Palette name is already taken", Toast.LENGTH_LONG).show();
+                        } else {
+                            fragmentListener.addCreatePaletteOptionsFragment();
+                        }
                     } catch(IOException e) {
-                        Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG);
+                        Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
                     }
                 }
             }

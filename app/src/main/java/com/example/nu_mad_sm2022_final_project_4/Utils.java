@@ -92,11 +92,16 @@ public class Utils {
                 .addOnFailureListener(e -> onFail.run());
     }
     
-    public static void storePaletteLocally(Context context, ColorPalette palette) throws IOException {
+    public static boolean storePaletteLocally(Context context, ColorPalette palette) throws IOException {
+        if (!paletteNameAvailable(context, palette.getName())) {
+            // Palette name is taken :(
+            return false;
+        }
         JsonArray paletteData = loadPaletteData(context);
         JsonElement paletteElement = getGson().toJsonTree(palette, ColorPalette.class);
         paletteData.add(paletteElement);
         syncPaletteData(context, paletteData);
+        return true;
     }
 
     public static List<ColorPalette> readPalettesLocally(Context context) throws IOException {
@@ -119,6 +124,12 @@ public class Utils {
             return localPaletteDataCache;
         }
         try {
+            // If something is going wrong with this part of the code, then
+            // the local data is probably corrupt.
+            //
+            // Uncomment this line to reset everything:
+
+            // context.deleteFile(PALETTES_FILE_NAME);
             FileInputStream fis = context.openFileInput(PALETTES_FILE_NAME);
             InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
             BufferedReader br = new BufferedReader(isr);
@@ -131,7 +142,7 @@ public class Utils {
         } catch(FileNotFoundException err) {
             try (FileOutputStream fos = context.openFileOutput(PALETTES_FILE_NAME, Context.MODE_PRIVATE)) {
                 JsonArray data = new JsonArray();
-                fos.write(localPaletteDataCache.getAsString().getBytes());
+                fos.write(getGson().toJson(data).getBytes());
                 return data;
             }
         }
@@ -140,7 +151,7 @@ public class Utils {
     private static void syncPaletteData(Context context, JsonArray data) throws IOException {
         localPaletteDataCache = data;
         try (FileOutputStream fos = context.openFileOutput(PALETTES_FILE_NAME, Context.MODE_PRIVATE)) {
-            fos.write(localPaletteDataCache.getAsString().getBytes());
+            fos.write(getGson().toJson(localPaletteDataCache).getBytes());
         }
     }
 
