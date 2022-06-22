@@ -3,9 +3,12 @@ package com.example.nu_mad_sm2022_final_project_4;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         imageViewFavorite = findViewById(R.id.imageViewFavorite);
         imageViewAddPalette = findViewById(R.id.imageViewAddPalette);
         imageViewExplore = findViewById(R.id.imageViewExplore);

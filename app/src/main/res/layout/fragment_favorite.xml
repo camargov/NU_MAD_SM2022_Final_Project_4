@@ -13,10 +13,13 @@
         android:id="@+id/favorite_textView_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
+        android:fontFamily="@font/poppins_medium"
         android:text="@string/favorite_welcome"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="#000000"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,9 +27,10 @@
         android:id="@+id/favorite_textView_palettesLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppins"
         android:text="@string/favorite_palette_list_label"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="@+id/favorite_textView_welcome"
         app:layout_constraintTop_toBottomOf="@+id/favorite_textView_welcome" />
 
@@ -35,7 +39,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:backgroundTint="#000000"
         android:entries="@array/palette_sort_options"
+        android:minHeight="48dp"
         app:layout_constraintStart_toStartOf="@+id/favorite_textView_palettesLabel"
         app:layout_constraintTop_toBottomOf="@+id/favorite_textView_palettesLabel" />
 
