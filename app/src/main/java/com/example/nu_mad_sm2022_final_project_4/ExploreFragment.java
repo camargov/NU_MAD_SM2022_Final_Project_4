@@ -29,7 +29,6 @@ import java.util.concurrent.Executors;
 public class ExploreFragment extends Fragment implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
     private IAddFragment fragmentListener;
     private IToastFromFragmentToMain toastListener;
-    public final static String TAG = "demo";
 
     // UI Elements
     private SearchView searchView;
@@ -62,19 +61,6 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
         getActivity().setTitle("Explore");
 
-        // TEMPORARY FOR TESTING:
-        /*
-        searchResults.add(
-                new ColorPalette("Primary RGB",
-                new ArrayList<Integer>(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE))));
-        searchResults.add(
-                new ColorPalette("Primary CMYK",
-                        new ArrayList<Integer>(Arrays.asList(Color.CYAN, Color.MAGENTA, Color.YELLOW))));
-        searchResults.add(
-                new ColorPalette("Valentines Day",
-                        new ArrayList<Integer>(Arrays.asList(Color.MAGENTA, Color.BLUE, Color.RED))));
-         */
-
         // Defining UI Elements
         searchView = view.findViewById(R.id.searchViewExplore);
         searchView.setOnQueryTextListener(this);
@@ -84,8 +70,6 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
 
         // Setting up listView
         listView = view.findViewById(R.id.listViewExplore);
-        adapter = new PaletteListEntryAdapter(this.getContext(), searchResults);
-        this.listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 
         // Setting up thread
@@ -103,8 +87,10 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
                     case LoadExploreSearchResults.STATUS_SUCCESS:
                         Bundle receivedDataSuccess = msg.getData();
                         if (receivedDataSuccess.getStringArrayList(LoadExploreSearchResults.PALETTE_ARRAY) != null) {
+                            // Setting up listview when a word is successfully searched
                             searchResults = convertStringToPalette(receivedDataSuccess.getStringArrayList(LoadExploreSearchResults.PALETTE_ARRAY));
-                            adapter.notifyDataSetChanged();
+                            adapter = new PaletteListEntryAdapter(getContext(), searchResults);
+                            listView.setAdapter(adapter);
                         }
                         break;
                 }
@@ -161,10 +147,10 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
                     if (counter == 0) {
                         palette.setName(currentStr);
                         currentStr = "";
+                        counter++;
                     }
                     // The case that the current string is a palette hex color
                     else {
-                        counter++;
                         paletteColors.add(Integer.parseInt(currentStr, 16) + 0xFF000000);
                         currentStr = "";
                     }

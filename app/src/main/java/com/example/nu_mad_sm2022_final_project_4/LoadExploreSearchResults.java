@@ -71,7 +71,12 @@ public class LoadExploreSearchResults implements Runnable {
                             // Creating a string for each palette and adding the palette's title
                             String paletteStr = "";
                             JSONObject object = rootJsonArray.getJSONObject(i);
-                            paletteStr += object.getString("title") + " " + object.getString("id") + ",";
+                            String paletteTitle = object.getString("title");
+                            if (paletteTitle.contains(",")) {
+                                int index = object.getString("title").indexOf(",");
+                                paletteTitle = paletteTitle.substring(0, index) + paletteTitle.substring(index + 1);
+                            }
+                            paletteStr += paletteTitle + ",";
 
                             // Getting the colors of the JSON object
                             JSONArray colorJsonArray = object.getJSONArray("colors");
