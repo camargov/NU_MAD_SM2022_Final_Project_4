@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,7 +23,8 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
     private ColorPalette colorPalette;
 
     // UI Elements
-    private TextView textViewPaletteName;
+    private TextView textViewPaletteName, textViewBack;
+    private ImageView imageViewBack;
     private Button buttonSavePalette;
     private LinearLayout linearLayout;
     private BigPaletteColorsAdapter linearLayoutAdapter;
@@ -63,8 +65,12 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         // Defining UI Elements
         textViewPaletteName = view.findViewById(R.id.textViewExploreSearchResultPaletteName);
         textViewPaletteName.setText(colorPalette.getName());
+        textViewBack = view.findViewById(R.id.textViewExploreSearchResultBack);
+        textViewBack.setOnClickListener(this);
         buttonSavePalette = view.findViewById(R.id.buttonExploreSearchResultSavePalette);
         buttonSavePalette.setOnClickListener(this);
+        imageViewBack = view.findViewById(R.id.imageViewExploreSearchResultBack);
+        imageViewBack.setOnClickListener(this);
 
         // Setting up recyclerView
         recyclerView = view.findViewById(R.id.recyclerViewExploreSearchResult);
@@ -105,6 +111,10 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
             // after saving is successful, go back to explore page with search results
              (pop back this fragment)
              */
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
+        else if (v.getId() == R.id.imageViewExploreSearchResultBack
+                || v.getId() == R.id.textViewExploreSearchResultBack) {
             getActivity().getSupportFragmentManager().popBackStack();
         }
     }
