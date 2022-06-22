@@ -6,10 +6,12 @@ import androidx.fragment.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     final String ONBOARDING_FRAGMENT = "ONBOARDING_FRAGMENT";
 
     private ImageView imageViewFavorite, imageViewAddPalette, imageViewExplore;
+    private Button logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +41,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageViewFavorite = findViewById(R.id.imageViewFavorite);
         imageViewAddPalette = findViewById(R.id.imageViewAddPalette);
         imageViewExplore = findViewById(R.id.imageViewExplore);
+        logout = findViewById(R.id.button_logout);
         imageViewFavorite.setOnClickListener(this);
         imageViewAddPalette.setOnClickListener(this);
         imageViewExplore.setOnClickListener(this);
+        logout.setOnClickListener(this);
+        setNavVisibility(false);
 
         if (Utils.getCurrentUser() != null) {
             Runnable onSyncComplete = () -> {
+                setNavVisibility(true);
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragmentConstraintLayout, FavoriteFragment.newInstance(), FAVORITE_FRAGMENT)
                         .commit();
@@ -75,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragmentConstraintLayout, ExploreFragment.newInstance(), EXPLORE_FRAGMENT)
                     .commit();
+        } else if (v.getId() == R.id.button_logout) {
+            FirebaseAuth.getInstance().signOut();
+            addOnboardingFragment();
         }
     }
 
@@ -168,5 +178,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageViewFavorite.setVisibility(visibility);
         imageViewAddPalette.setVisibility(visibility);
         imageViewExplore.setVisibility(visibility);
+        logout.setVisibility(visibility);
     }
 }
