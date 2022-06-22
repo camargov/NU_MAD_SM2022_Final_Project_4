@@ -11,6 +11,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -115,7 +117,8 @@ public class Utils {
     }
 
     public static List<ColorPalette> readPalettesLocally(Context context) throws IOException {
-        return paletteListFromJson(loadPaletteData(context));
+        String userId = getCurrentUserId();
+        return paletteListFromJson(loadPaletteData(context)).stream().filter(palette -> palette.getUserId().equals(getCurrentUserId())).collect(Collectors.toList());
     }
 
     public static boolean paletteNameAvailable(Context context, String name) throws IOException {
@@ -175,7 +178,7 @@ public class Utils {
     // and all palettes that are stored locally and marked as "cloudPalette"
     // should be on the cloud.
     public static void syncLocalPaletteDataToCloud(Context context, Runnable onSuccess, Runnable onFail) throws IOException {
-        final List<ColorPalette> localPalettes = paletteListFromJson(loadPaletteData(context));
+        final List<ColorPalette> localPalettes = readPalettesLocally(context);
         localPalettes.sort(Comparator.comparing(ColorPalette::getName));
         final List<ColorPalette> markedCloudPalettes = localPalettes.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
         String userId = getCurrentUserId();
@@ -265,8 +268,13 @@ public class Utils {
         return resultSet;
     }
 
+    // Given palettes are palettes for CURRENT USER
+    // Sync this with other local palettes that could be from other users!
     private static void overwritePaletteData(Context context, List<ColorPalette> palettes) throws IOException {
-        JsonArray newData = (JsonArray) getGson().toJsonTree(palettes.toArray(), ColorPalette[].class);
+        String userId = getCurrentUserId();
+        List<ColorPalette> otherPalettes = paletteListFromJson(loadPaletteData(context)).stream().filter(palette -> !palette.getUserId().equals(userId)).collect(Collectors.toList());
+        otherPalettes.addAll(palettes);
+        JsonArray newData = (JsonArray) getGson().toJsonTree(otherPalettes.toArray(), ColorPalette[].class);
         syncPaletteData(context, newData);
     }
 
@@ -294,6 +302,7 @@ public class Utils {
                         }
                         for(ColorPalette palette : palettes) {
                             if (!listContainsPalette(oldPalettes, palette)) {
+                                palette.setUserId(getCurrentUserId());
                                 transaction.set(db.collection("palettes").document(), palette);
                             }
                         }
@@ -312,8 +321,13 @@ public class Utils {
     }
 
                         // TODO: Make this return the actual user ID once we have user authentication set up.
+    public static FirebaseUser getCurrentUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
     public static String getCurrentUserId() {
-        return "testUserId";
+        FirebaseUser user = getCurrentUser();
+        return user == null ? null : user.getUid();
     }
 
     private static List<ColorPalette> paletteListFromJson(JsonArray paletteData) {

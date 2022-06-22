@@ -7,4 +7,7 @@ public interface IAddFragment {
     void addExploreSearchResultFragment(ColorPalette palette);
     void addCreatePaletteOptionsFragment();
     void addCreatePaletteFromImageSeeMorePalettesFragment();
+    void addLogInFragment();
+    void addRegisterFragment();
+    void addOnboardingFragment();
 }
