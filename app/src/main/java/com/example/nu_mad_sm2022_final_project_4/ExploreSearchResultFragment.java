@@ -1,6 +1,7 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,12 +16,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ExploreSearchResultFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_COLOR_PALETTE = "ARG_COLOR_PALETTE";
     private ColorPalette colorPalette;
+    private IToastFromFragmentToMain toastListener;
 
     // UI Elements
     private TextView textViewPaletteName, textViewBack;
@@ -32,11 +36,6 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
     private ColorDescriptionRowAdapter recyclerViewAdapter;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
     private ArrayList<Integer> colors = new ArrayList<>();
-
-    // Firestore-related items
-    //private db;
-    //private mAuth;
-    //private FirebaseUser mUser;
 
     public ExploreSearchResultFragment() {}
 
@@ -95,27 +94,34 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        if (context instanceof IToastFromFragmentToMain) {
+            toastListener = (IToastFromFragmentToMain) context;
+        }
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.buttonExploreSearchResultSavePalette) {
-            // add palette to user's palette collection
-            /*
-            db.collection("users")
-            .document(mUser.getEmail())
-            .collection("palettes")
-            .document()
-            .set(colorPalette);
-
-            // after saving is successful, go back to explore page with search results
-             (pop back this fragment)
-             */
-            getActivity().getSupportFragmentManager().popBackStack();
+            colorPalette.setUserId(Utils.getCurrentUserId());
+            colorPalette.setCloudPalette(true);
+            try {
+                Utils.storePaletteLocally(getActivity(), colorPalette);
+            } catch(IOException e) {
+                Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
+            }
+            Utils.uploadPalette(colorPalette,
+                    () -> getActivity().runOnUiThread(() -> savedPaletteSuccessfully()),
+                    () -> getActivity().runOnUiThread(() -> toastListener.toastFromFragment("Something went wrong; adding palette locally, try restarting later to re-sync public data with cloud")));
         }
         else if (v.getId() == R.id.imageViewExploreSearchResultBack
                 || v.getId() == R.id.textViewExploreSearchResultBack) {
             getActivity().getSupportFragmentManager().popBackStack();
         }
+    }
+
+    private void savedPaletteSuccessfully() {
+        toastListener.toastFromFragment("Palette saved successfully!");
+        buttonSavePalette.setText("Saved");
+        buttonSavePalette.setClickable(false);
     }
 }
