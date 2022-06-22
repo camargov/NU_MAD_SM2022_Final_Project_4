@@ -52,20 +52,19 @@ public class ColorDescriptionRowAdapter extends RecyclerView.Adapter<ColorDescri
 
     @Override
     public void onBindViewHolder(@NonNull ColorDescriptionRowAdapter.ViewHolder holder, int position) {
-        // THIS MAY CHANGE BASED ON WHAT TYPE OF INTEGER IS SENT TO THIS ADAPTER - CONVERSION MAY BE NEEDED
         holder.getConstraintLayoutColorContainer().setBackgroundColor(colors.get(position));
-        // SET TEXT BASED ON INT
-        //holder.getTextViewHex().setText(convertIntToHex(colors.get(position)));
-        // SET TEXT BASED ON INT
-        //holder.getTextViewRGB().setText(convertIntToRGB(colors.get(position)));
 
+        // Setting the hex and rgb values
+        String hexColor = Integer.toHexString(colors.get(position) - 0xFF000000);
+        holder.getTextViewHex().setText("#" + hexColor.toUpperCase());
+        holder.getTextViewRGB().setText(convertHexToRGB(hexColor));
     }
 
-    private String convertIntToHex(Integer num) {
-        return "HEX";
-    }
-    private String convertIntToRGB(Integer num) {
-        return "RGB";
+    private String convertHexToRGB(String colorStr) {
+        return "RGB: ("
+                + Integer.valueOf(colorStr.substring(0, 2), 16) + ","
+                + Integer.valueOf(colorStr.substring(2, 4), 16) + ","
+                + Integer.valueOf(colorStr.substring(4, 6), 16) + ")";
     }
 
     @Override
