@@ -117,7 +117,8 @@ public class Utils {
     }
 
     public static List<ColorPalette> readPalettesLocally(Context context) throws IOException {
-        return paletteListFromJson(loadPaletteData(context));
+        String userId = getCurrentUserId();
+        return paletteListFromJson(loadPaletteData(context)).stream().filter(palette -> palette.getUserId().equals(getCurrentUserId())).collect(Collectors.toList());
     }
 
     public static boolean paletteNameAvailable(Context context, String name) throws IOException {
@@ -177,7 +178,7 @@ public class Utils {
     // and all palettes that are stored locally and marked as "cloudPalette"
     // should be on the cloud.
     public static void syncLocalPaletteDataToCloud(Context context, Runnable onSuccess, Runnable onFail) throws IOException {
-        final List<ColorPalette> localPalettes = paletteListFromJson(loadPaletteData(context));
+        final List<ColorPalette> localPalettes = readPalettesLocally(context);
         localPalettes.sort(Comparator.comparing(ColorPalette::getName));
         final List<ColorPalette> markedCloudPalettes = localPalettes.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
         String userId = getCurrentUserId();
@@ -267,8 +268,13 @@ public class Utils {
         return resultSet;
     }
 
+    // Given palettes are palettes for CURRENT USER
+    // Sync this with other local palettes that could be from other users!
     private static void overwritePaletteData(Context context, List<ColorPalette> palettes) throws IOException {
-        JsonArray newData = (JsonArray) getGson().toJsonTree(palettes.toArray(), ColorPalette[].class);
+        String userId = getCurrentUserId();
+        List<ColorPalette> otherPalettes = paletteListFromJson(loadPaletteData(context)).stream().filter(palette -> !palette.getUserId().equals(userId)).collect(Collectors.toList());
+        otherPalettes.addAll(palettes);
+        JsonArray newData = (JsonArray) getGson().toJsonTree(otherPalettes.toArray(), ColorPalette[].class);
         syncPaletteData(context, newData);
     }
 
