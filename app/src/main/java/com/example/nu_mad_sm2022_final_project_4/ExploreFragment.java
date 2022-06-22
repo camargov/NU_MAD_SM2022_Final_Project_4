@@ -98,12 +98,11 @@ public class ExploreFragment extends Fragment implements SearchView.OnQueryTextL
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        // update suggestion list
         return false;
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        fragmentListener.addExploreSearchResultFragment(searchResults.get(position));
+        fragmentListener.addExploreSearchResultFragment(searchResults.get(position), true);
     }
 }

@@ -41,4 +41,5 @@
     <string name="see_more_palettes">See More Palettes</string>
     <string name="select_alternative_palette">Select Alternative Palette:</string>
     <string name="switch_camera">switch camera</string>
+    <string name="back">Back</string>
 </resources>

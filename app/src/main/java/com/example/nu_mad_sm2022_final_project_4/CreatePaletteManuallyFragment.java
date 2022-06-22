@@ -31,6 +31,10 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     private IToastFromFragmentToMain toastListener;
     private boolean isAddButton = true;
     private int colorPosition;
+    private static final String ARG_EDIT_PALETTE = "ARG_EDIT_PALETTE";
+    private boolean editPalette;
+    private static final String ARG_COLOR_PALETTE = "ARG_COLOR_PALETTE";
+    private ColorPalette colorPalette;
 
     // UI Elements
     private EditText editTextPaletteName, editTextColorHexCode;
@@ -46,9 +50,11 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
 
     public CreatePaletteManuallyFragment() {}
 
-    public static CreatePaletteManuallyFragment newInstance() {
+    public static CreatePaletteManuallyFragment newInstance(boolean editPalette, ColorPalette palette) {
         CreatePaletteManuallyFragment fragment = new CreatePaletteManuallyFragment();
         Bundle args = new Bundle();
+        args.putBoolean(ARG_EDIT_PALETTE, editPalette);
+        args.putSerializable(ARG_COLOR_PALETTE, palette);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,6 +62,10 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            editPalette = getArguments().getBoolean(ARG_EDIT_PALETTE);
+            colorPalette = (ColorPalette) getArguments().getSerializable(ARG_COLOR_PALETTE);
+        }
     }
 
     @Override
@@ -79,6 +89,13 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         recyclerView.setAdapter(recyclerViewAdapter);
 
         makePublic = view.findViewById(R.id.createPaletteManually_checkBox_makeCloud);
+
+        if (editPalette) {
+            // fill in options with palette information
+            editTextPaletteName.setText(colorPalette.getName());
+            colors = convertColorsIntToString(colorPalette.getColors());
+
+        }
 
         return view;
     }
@@ -200,5 +217,15 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
             list.add(Integer.parseInt(colors.get(i).substring(1), 16) + 0xFF000000);
         }
         return list;
+    }
+
+    private ArrayList<String> convertColorsIntToString(List<Integer> intList) {
+        ArrayList<String> strList = new ArrayList<>();
+
+        for (int i = 0; i < intList.size(); i++) {
+            // make the conversion
+        }
+
+        return strList;
     }
 }

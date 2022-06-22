@@ -98,16 +98,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void addCreatePaletteManuallyFragment() {
+    public void addCreatePaletteManuallyFragment(boolean editPalette, ColorPalette palette) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentConstraintLayout, CreatePaletteManuallyFragment.newInstance(), CREATE_PALETTE_MANUALLY_FRAGMENT)
+                .replace(R.id.fragmentConstraintLayout, CreatePaletteManuallyFragment.newInstance(editPalette, palette), CREATE_PALETTE_MANUALLY_FRAGMENT)
                 .commit();
     }
 
     @Override
-    public void addExploreSearchResultFragment(ColorPalette palette) {
+    public void addExploreSearchResultFragment(ColorPalette palette, boolean isExplore) {
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentConstraintLayout, ExploreSearchResultFragment.newInstance(palette), EXPLORE_SEARCH_RESULT_FRAGMENT)
+                .add(R.id.fragmentConstraintLayout, ExploreSearchResultFragment.newInstance(palette, isExplore), EXPLORE_SEARCH_RESULT_FRAGMENT)
                 .addToBackStack(null)
                 .commit();
     }

@@ -17,7 +17,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewExploreSearchResultBack" />
 
     <Button
         android:id="@+id/buttonExploreSearchResultSavePalette"
@@ -37,7 +37,7 @@
         android:layout_marginTop="32dp"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewExploreSearchResultPaletteName"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/buttonExploreSearchResultSavePalette"></LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewExploreSearchResult"
@@ -48,5 +48,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayoutExploreSearchResult" />
+
+    <ImageView
+        android:id="@+id/imageViewExploreSearchResultBack"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/back_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewExploreSearchResultBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="2dp"
+        android:text="@string/back"
+        android:textColor="#040404"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewExploreSearchResultBack"
+        app:layout_constraintStart_toEndOf="@+id/imageViewExploreSearchResultBack"
+        app:layout_constraintTop_toTopOf="@+id/imageViewExploreSearchResultBack" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

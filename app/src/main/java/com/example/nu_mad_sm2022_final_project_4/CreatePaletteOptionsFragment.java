@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.util.ArrayList;
+
 public class CreatePaletteOptionsFragment extends Fragment implements View.OnClickListener {
     private IAddFragment fragmentListener;
     private Button buttonTakePhoto, buttonAddPhoto, buttonManuallyAddColors;
@@ -68,7 +70,7 @@ public class CreatePaletteOptionsFragment extends Fragment implements View.OnCli
 //            fragmentListener.addDisplayPhotoGalleryFragment();
         }
         else if (v.getId() == R.id.buttonCreatePaletteOptionsManuallyAddColors) {
-            fragmentListener.addCreatePaletteManuallyFragment();
+            fragmentListener.addCreatePaletteManuallyFragment(false, new ColorPalette());
         }
     }
     @Override

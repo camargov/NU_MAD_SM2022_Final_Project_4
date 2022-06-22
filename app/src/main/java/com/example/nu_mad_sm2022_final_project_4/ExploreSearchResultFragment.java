@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,10 +20,15 @@ import java.util.ArrayList;
 
 public class ExploreSearchResultFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_COLOR_PALETTE = "ARG_COLOR_PALETTE";
+    private static final String ARG_IS_EXPLORE = "ARG_IS_EXPLORE";
     private ColorPalette colorPalette;
+    private boolean isExplore;
+    private IToastFromFragmentToMain toastListener;
+    private IAddFragment fragmentListener;
 
     // UI Elements
-    private TextView textViewPaletteName;
+    private TextView textViewPaletteName, textViewBack;
+    private ImageView imageViewBack;
     private Button buttonSavePalette;
     private LinearLayout linearLayout;
     private BigPaletteColorsAdapter linearLayoutAdapter;
@@ -38,10 +44,11 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
 
     public ExploreSearchResultFragment() {}
 
-    public static ExploreSearchResultFragment newInstance(ColorPalette colorPalette) {
+    public static ExploreSearchResultFragment newInstance(ColorPalette colorPalette, boolean isExplore) {
         ExploreSearchResultFragment fragment = new ExploreSearchResultFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_COLOR_PALETTE, colorPalette);
+        args.putBoolean(ARG_IS_EXPLORE, isExplore);
         fragment.setArguments(args);
         return fragment;
     }
@@ -51,6 +58,7 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             colorPalette = (ColorPalette) getArguments().getSerializable(ARG_COLOR_PALETTE);
+            isExplore = getArguments().getBoolean(ARG_IS_EXPLORE);
         }
     }
 
@@ -65,6 +73,10 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         textViewPaletteName.setText(colorPalette.getName());
         buttonSavePalette = view.findViewById(R.id.buttonExploreSearchResultSavePalette);
         buttonSavePalette.setOnClickListener(this);
+        imageViewBack = view.findViewById(R.id.imageViewExploreSearchResultBack);
+        imageViewBack.setOnClickListener(this);
+        textViewBack = view.findViewById(R.id.textViewExploreSearchResultBack);
+        textViewBack.setOnClickListener(this);
 
         // Setting up recyclerView
         recyclerView = view.findViewById(R.id.recyclerViewExploreSearchResult);
@@ -83,28 +95,50 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
             linearLayout.addView(linearLayoutAdapter.getView(i, null, linearLayout));
         }
 
+        if (isExplore) {
+            // Check if user already has this palette (check palette name)
+            // set the button to unclickable if user already has this palette
+        }
+        else {
+            buttonSavePalette.setText("Edit Palette");
+        }
+
         return view;
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        if (context instanceof IToastFromFragmentToMain) {
+            toastListener = (IToastFromFragmentToMain) context;
+            fragmentListener = (IAddFragment) context;
+        }
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.buttonExploreSearchResultSavePalette) {
-            // add palette to user's palette collection
+            // The case that user can add palette after searching for one
+            if (isExplore) {
+                // add palette to user's palette collection
             /*
             db.collection("users")
             .document(mUser.getEmail())
             .collection("palettes")
             .document()
             .set(colorPalette);
-
-            // after saving is successful, go back to explore page with search results
-             (pop back this fragment)
              */
+                buttonSavePalette.setClickable(false);
+                buttonSavePalette.setText("Saved");
+                toastListener.toastFromFragment("Successfully saved this palette!");
+            }
+            // The case that the button allows user to edit the palette
+            else {
+                fragmentListener.addCreatePaletteManuallyFragment(true, colorPalette);
+            }
+        }
+        else if ((v.getId() == R.id.imageViewExploreSearchResultBack)
+                || (v.getId() == R.id.textViewExploreSearchResultBack)) {
             getActivity().getSupportFragmentManager().popBackStack();
         }
     }
