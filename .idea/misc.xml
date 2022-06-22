@@ -5,6 +5,11 @@
       <map>
         <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_camera.xml" value="0.1" />
         <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_create_palette_manually.xml" value="0.264" />
+        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_i_c08_register.xml" value="0.1" />
+        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_i_c08_register_log_in.xml" value="0.1" />
+        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_log_in.xml" value="0.4" />
+        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_register.xml" value="0.4" />
+        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_register_log_in.xml" value="0.264" />
         <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/listview_palette.xml" value="0.10435663627152988" />
         <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/listview_palette_color.xml" value="0.10435663627152988" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.274534717504529" />

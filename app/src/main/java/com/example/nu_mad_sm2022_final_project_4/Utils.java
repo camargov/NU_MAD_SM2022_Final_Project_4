@@ -11,6 +11,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -294,6 +296,7 @@ public class Utils {
                         }
                         for(ColorPalette palette : palettes) {
                             if (!listContainsPalette(oldPalettes, palette)) {
+                                palette.setUserId(getCurrentUserId());
                                 transaction.set(db.collection("palettes").document(), palette);
                             }
                         }
@@ -312,8 +315,13 @@ public class Utils {
     }
 
                         // TODO: Make this return the actual user ID once we have user authentication set up.
+    public static FirebaseUser getCurrentUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
     public static String getCurrentUserId() {
-        return "testUserId";
+        FirebaseUser user = getCurrentUser();
+        return user == null ? null : user.getUid();
     }
 
     private static List<ColorPalette> paletteListFromJson(JsonArray paletteData) {

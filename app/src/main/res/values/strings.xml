@@ -41,4 +41,15 @@
     <string name="see_more_palettes">See More Palettes</string>
     <string name="select_alternative_palette">Select Alternative Palette:</string>
     <string name="switch_camera">switch camera</string>
+    <string name="onboarding_greeting">Welcome to Patches!</string>
+    <string name="onboarding_register">Register</string>
+    <string name="onboarding_login">Login</string>
+    <string name="login_label">Log In</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="register_label">Register</string>
+    <string name="register_username">Username</string>
+    <string name="register_email">Email</string>
+    <string name="register_password">Password</string>
+    <string name="register_confirm_password">Repeat Password</string>
 </resources>
