@@ -5,8 +5,7 @@
     android:id="@+id/constraintLayoutCreatePaletteManuallyAddColor"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="6dp"
-    android:background="#F1F1F1">
+    android:layout_margin="6dp">
 
     <TextView
         android:id="@+id/textViewCreatePaletteManuallyColorHex"
@@ -15,8 +14,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:background="#FFFEFE"
+        android:fontFamily="@font/poppins_medium"
+        android:textColor="#000000"
         android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,7 +26,7 @@
         android:id="@+id/imageViewCreatePaletteManuallyEdit"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageViewCreatePaletteManuallyTrash"
         app:layout_constraintTop_toTopOf="parent"
@@ -33,11 +34,12 @@
 
     <ImageView
         android:id="@+id/imageViewCreatePaletteManuallyTrash"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/trash" />
+        app:srcCompat="@drawable/delete" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
