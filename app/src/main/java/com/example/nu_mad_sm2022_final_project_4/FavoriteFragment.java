@@ -76,7 +76,7 @@ public class FavoriteFragment extends Fragment {
         this.paletteList = view.findViewById(R.id.favorite_listView_palettes);
         try {
             List<ColorPalette> palettes = Utils.readPalettesLocally(this.getActivity());
-            PaletteListEntryAdapter adapter = new PaletteListEntryAdapter(this.getContext(), palettes);
+            PaletteListEntryAdapter adapter = new PaletteListEntryAdapter(this.getContext(), palettes, true, (IAddFragment) getActivity());
             this.paletteList.setAdapter(adapter);
         } catch (IOException e) {
             e.printStackTrace();

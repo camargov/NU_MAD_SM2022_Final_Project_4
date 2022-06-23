@@ -33,16 +33,17 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     private int colorPosition;
 
     // UI Elements
-    private EditText editTextPaletteName, editTextColorHexCode;
-    private Button buttonSave, buttonAdd;
+    protected EditText editTextPaletteName, editTextColorHexCode;
+    protected Button buttonSave;
+    private Button buttonAdd;
     private TextView textViewAddColorHex;
-    private CheckBox makePublic;
+    protected CheckBox makePublic;
 
     // RecyclerView-related items
     private RecyclerView recyclerView;
-    private AddColorManuallyAdapter recyclerViewAdapter;
+    protected AddColorManuallyAdapter recyclerViewAdapter;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
-    private ArrayList<String> colors = new ArrayList<>();
+    protected ArrayList<String> colors = new ArrayList<>();
 
     public CreatePaletteManuallyFragment() {}
 
