@@ -13,7 +13,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:backgroundTint="#7F73FD"
+        android:fontFamily="@font/poppins_medium"
         android:text="@string/logout_button"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,46 +39,42 @@
         android:id="@+id/navBarLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#F6F6F6"
+        android:background="#101010"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
+            android:id="@+id/imageViewAddPalette"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cyan_add" />
+
+        <ImageView
             android:id="@+id/imageViewFavorite"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/star_icon" />
+            app:srcCompat="@drawable/pink_star" />
 
         <ImageView
             android:id="@+id/imageViewExplore"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="16dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/explore_icon" />
-
-        <ImageView
-            android:id="@+id/imageViewAddPalette"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageViewExplore"
-            app:layout_constraintStart_toEndOf="@+id/imageViewFavorite"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/add_icon" />
+            app:srcCompat="@drawable/explore_yellow" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
