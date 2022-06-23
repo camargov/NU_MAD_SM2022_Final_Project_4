@@ -210,7 +210,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         File fileToUpload = new File(image_uri.toString());
         HttpUrl url = HttpUrl.parse(API_COLOR_URL);
         RequestBody body = new FormBody.Builder()
-                .add("image","=@/"+image_uri.toString())
+                .add("image_url",upload_Path.toString())
                 .build();
         Request request = new Request.Builder()
                 .url(url)
