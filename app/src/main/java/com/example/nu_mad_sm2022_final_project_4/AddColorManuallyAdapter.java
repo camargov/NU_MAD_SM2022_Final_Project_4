@@ -2,6 +2,7 @@ package com.example.nu_mad_sm2022_final_project_4;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -68,6 +70,19 @@ public class AddColorManuallyAdapter extends RecyclerView.Adapter<AddColorManual
     public void onBindViewHolder(@NonNull AddColorManuallyAdapter.ViewHolder holder, int position) {
         holder.getTextViewColorHex().setText(colors.get(position));
         holder.getConstraintLayout().setBackgroundColor(Color.parseColor(colors.get(position)));
+
+        // Changing the color of the text and backgrounds of image based on the color of the row
+        if (ColorUtils.calculateLuminance(Color.parseColor(colors.get(position))) < 0.5) {
+            holder.getTextViewColorHex().setTextColor(Color.WHITE);
+            holder.getImageViewEdit().setBackgroundColor(Color.WHITE);
+            holder.getImageViewTrash().setBackgroundColor(Color.WHITE);
+        }
+        else {
+            holder.getTextViewColorHex().setTextColor(Color.BLACK);
+            holder.getImageViewEdit().setBackgroundColor(Color.TRANSPARENT);
+            holder.getImageViewTrash().setBackgroundColor(Color.TRANSPARENT);
+        }
+
         holder.getImageViewEdit().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
