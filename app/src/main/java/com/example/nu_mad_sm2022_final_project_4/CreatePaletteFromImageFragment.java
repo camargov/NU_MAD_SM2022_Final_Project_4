@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
@@ -79,7 +80,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
     private final String API_AUTHORIZATION = "Basic YWNjX2ZhZDljY2MxZmUzYzk4NDphMGRmM2ExYzk5ODRiMDUwODA1YTNjYTU1NzJlNWM1Nw==";
 
-    private static final String ARG_CLOUD_FILE_PATH = "cloudFilePath";
+    private static final String ARG_IMAGE_URI = "imageUri";
     private String cloudFilepath;
 
     private StorageReference upload_Path;
@@ -91,8 +92,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     public static CreatePaletteFromImageFragment newInstance(Uri image_uri) {
         CreatePaletteFromImageFragment fragment = new CreatePaletteFromImageFragment(image_uri);
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
+        args.putParcelable(ARG_IMAGE_URI, image_uri);
         fragment.setArguments(args);
         return fragment;
     }
@@ -101,8 +101,9 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            this.cloudFilepath = getArguments().getString(ARG_CLOUD_FILE_PATH);
+            this.image_uri = getArguments().getParcelable(ARG_IMAGE_URI);
         }
+        this.cloudFilepath = getPhotoPath();
     }
 
     @Override
@@ -122,14 +123,15 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
         // Set up colors array
 
-        getColorsFromImageJson(
-                ()->{
-                    Toast.makeText(getContext(), "Error with request.", Toast.LENGTH_SHORT).show();
-                },
-                () -> {
-                    Toast.makeText(getContext(), "Request was not Successful.", Toast.LENGTH_SHORT).show();
-                }
-        );
+        uploadImage(uri -> {
+                getColorsFromImageJson(uri,
+                        () -> Toast.makeText(getContext(), "Error with request.", Toast.LENGTH_SHORT).show(),
+                        () -> Toast.makeText(getContext(), "Request was not Successful.", Toast.LENGTH_SHORT).show()
+                );
+                return null;
+        },
+                () -> Toast.makeText(getContext(), "Request was not Successful.", Toast.LENGTH_SHORT).show());
+
 
         // Setting up recyclerView
         recyclerViewProminentColors = view.findViewById(R.id.recyclerViewCreatePaletteFromImageProminentColors);
@@ -154,7 +156,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     }
 
 
-    public void uploadImage(){
+    public void uploadImage(Function<Uri, Void> useDownloadUrl, Runnable onFail){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference root = storage.getReference();
         StorageReference uploadPath = root.child(cloudFilepath);
@@ -165,14 +167,20 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
             byte[] data = baos.toByteArray();
             uploadPath.putBytes(data)
                     .addOnCompleteListener(task -> getActivity().runOnUiThread(() -> {
-                        getActivity().onBackPressed();
-                        upload_Path = root.child(getPhotoPath());
+                        uploadPath.getDownloadUrl()
+                                .addOnSuccessListener(useDownloadUrl::apply)
+                                .addOnFailureListener(e -> {
+                                    e.printStackTrace();
+                                    onFail.run();
+                                });
                     }));
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            onFail.run();
         } catch (IOException e) {
             e.printStackTrace();
+            onFail.run();
         }
     }
     private String getPhotoPath() {
@@ -206,16 +214,19 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         }
     }
 
-    public void getColorsFromImageJson(Runnable onFail,Runnable onError){
+    public void getColorsFromImageJson(Uri downloadUri, Runnable onFail, Runnable onError){
         File fileToUpload = new File(image_uri.toString());
-        HttpUrl url = HttpUrl.parse(API_COLOR_URL);
-        RequestBody body = new FormBody.Builder()
-                .add("image_url",upload_Path.toString())
+        HttpUrl url = HttpUrl.parse(API_COLOR_URL)
+                .newBuilder()
+                .addQueryParameter("image_url", downloadUri.toString())
                 .build();
+//        RequestBody body = new FormBody.Builder()
+//                .add("image_url",downloadUri.toString())
+//                .build();
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization",API_AUTHORIZATION)
-                .post(body)
+                .get()
                 .build();
         this.client.newCall(request).enqueue(new Callback() {
             @Override
@@ -238,18 +249,17 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
                         String html_code = color.get("html_code").getAsString();
                         html_colors.add(html_code);
                     }
-                    String[] html_colors_arr = (String[])html_colors.toArray();
+                    String[] html_colors_arr = html_colors.toArray(new String[0]);
                     getActivity().runOnUiThread(convertStringArrToInt(html_colors_arr));
                 } else {
-                    System.out.println("response body String: " + response.body().string());
                     Log.d("getColorsFromImageJson", "onResponse: " + response.body().string());
-                    getActivity().runOnUiThread(()->{
-                        try {
-                            Log.d("getColorsFromImageJson", "onResponse: " + response.body().string());
-                        } catch (IOException e) {
-                            Log.d("getColorsFromImageJson", "onResponse: error - " + e.getMessage());
-                        }
-                    });
+//                    getActivity().runOnUiThread(()->{
+//                        try {
+//                            Log.d("getColorsFromImageJson", "onResponse: " + response.body().string());
+//                        } catch (IOException e) {
+//                            Log.d("getColorsFromImageJson", "onResponse: error - " + e.getMessage());
+//                        }
+//                    });
                     getActivity().runOnUiThread(onError);
                 }
             }
