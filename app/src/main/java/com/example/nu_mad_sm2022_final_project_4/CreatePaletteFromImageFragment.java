@@ -9,6 +9,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +19,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.DataOutputStream;
+import java.io.BufferedInputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class CreatePaletteFromImageFragment extends Fragment implements View.OnClickListener {
     private Uri image_uri;
@@ -36,6 +52,8 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     private ColorDescriptionRowAdapter recyclerViewAdapter;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
     private ArrayList<Integer> colors = new ArrayList<>();
+
+    private final String API_AUTHORIZATION = "Basic YWNjX2ZhZDljY2MxZmUzYzk4NDphMGRmM2ExYzk5ODRiMDUwODA1YTNjYTU1NzJlNWM1Nw==";
 
     public CreatePaletteFromImageFragment(Uri image_uri) {
         this.image_uri = image_uri;
@@ -54,8 +72,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            //mParam1 = getArguments().getString(ARG_PARAM1);
-            //mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
 
@@ -63,6 +80,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_palette_from_image, container, false);
+        Log.d("CreatePaletteFromImageFragment", "onCreateView");
 
         // Defining UI Elements:
         editTextPaletteName = view.findViewById(R.id.editTextCreatePaletteFromImageName);
@@ -74,6 +92,12 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         buttonSave.setOnClickListener(this);
 
         // Set up colors array
+
+        try {
+            getColorsFromImagga();
+        } catch (IOException e) {
+            Log.d("CreatePaletteFromImageFragment", "onCreateView: " + e.getMessage());
+        }
 
         // Setting up recyclerView
         recyclerViewProminentColors = view.findViewById(R.id.recyclerViewCreatePaletteFromImageProminentColors);
@@ -121,5 +145,81 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
              */
             }
         }
+    }
+
+    public void getColorsFromImagga() throws IOException {
+        Thread worker = new Thread(new imaggaAPIWorker(image_uri,new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message msg) {
+                Bundle receivedData = msg.getData();
+                switch(msg.what){
+                    case imaggaAPIWorker.STATUS_UNABLE_TO_EXECUTE:
+                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Unable to execute.");
+                        String error = receivedData.getString("error");
+                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage error message: " + error);
+                        break;
+                    case imaggaAPIWorker.STATUS_SUCCESS_COLORS_RETRIEVED:
+                        String[] colors = receivedData.getStringArray(imaggaAPIWorker.COLOR_ARRAY_KEY);
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for(int i=0;i<colors.length;i++){
+                            stringBuilder.append(colors[i]).append("\n");
+                        }
+                        Log.d("CreatePaletteFromImageFragment", "color array:\n" + stringBuilder.toString());
+                }
+                return false;
+            }
+        })),"imagga worker using request");
+        worker.start();
+    }
+
+    public void getColorsFromImage(){
+        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: ");
+        Thread worker = new Thread(new imaggaAPIWorker(image_uri, new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message msg) {
+                Bundle receivedData = msg.getData();
+                switch(msg.what){
+                    case imaggaAPIWorker.STATUS_REQUEST:
+                        String request_msg = receivedData.getString("request");
+                        Log.d("CreatePaletteFromImageFragment", "imaggaAPIWorker - handleMessage: " + request_msg);
+                        break;
+                    case imaggaAPIWorker.STATUS_UNABLE_TO_EXECUTE:
+                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Unable to execute.");
+                        String error = receivedData.getString("error");
+                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage error message: " + error);
+                        Toast.makeText(getActivity(), "We were unable process your image. Please wait and try again.", Toast.LENGTH_SHORT).show();
+                        break;
+                    case imaggaAPIWorker.STATUS_UNSUCESSFUL:
+                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Unsucessful.");
+
+                        Toast.makeText(getActivity(), "We were unable to connect to the API, please ensure you have a stable internet connection.", Toast.LENGTH_SHORT).show();
+                        break;
+                    case imaggaAPIWorker.STATUS_SUCCESS_COLORS_RETRIEVED:
+                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Success.");
+                        String upload_id = receivedData.getString("upload_id");
+                        Log.d("CreatePaletteFromImageFragment", "handleMessage - upload_id:" + upload_id);
+                        String[] html_colors = receivedData.getStringArray(imaggaAPIWorker.COLOR_ARRAY_KEY);
+                        StringBuilder colorsAsString = new StringBuilder();
+                        for(String color: html_colors){
+                            colorsAsString.append(color);
+                            colorsAsString.append("\n");
+                        }
+                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: " + colorsAsString.toString() );
+                        convertStringArrToInt(html_colors);
+                        break;
+
+                }
+                return false;
+            }
+        })),"imagga worker");
+        worker.start();
+    }
+
+    private void convertStringArrToInt(String[] arr){
+        colors.clear();
+        for (int i = 0; i < arr.length; i++) {
+            colors.add(Integer.parseInt(arr[i].substring(1), 16) + 0xFF000000);
+        }
+
     }
 }

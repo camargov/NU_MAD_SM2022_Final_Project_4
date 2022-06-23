@@ -117,6 +117,7 @@ public class CameraFragment extends Fragment {
         getActivity().setTitle("Add Palette");
 
         switch_camera = view.findViewById(R.id.imageView_switchCamera);
+        switch_camera.setImageResource(R.drawable.switch_camera_icon);
         switch_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -217,6 +218,8 @@ public class CameraFragment extends Fragment {
                     Toast.makeText(getContext(), "Camera Provider not found. Something went very wrong.", Toast.LENGTH_SHORT).show();
                 }
             }, ContextCompat.getMainExecutor(getContext()));
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
         }
     }
 
