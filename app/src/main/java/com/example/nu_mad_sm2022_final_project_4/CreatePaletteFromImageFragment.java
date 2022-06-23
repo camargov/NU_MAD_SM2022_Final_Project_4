@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -69,6 +70,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     private EditText editTextPaletteName;
     private Button buttonSeeMorePalettes, buttonSave;
     private ImageView imageView;
+    private ProgressBar loading_asset;
 
     // Setting up recyclerView
     private RecyclerView recyclerViewProminentColors;
@@ -120,6 +122,8 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         Picasso.get().load(image_uri).into(imageView);
         buttonSeeMorePalettes.setOnClickListener(this);
         buttonSave.setOnClickListener(this);
+        loading_asset = view.findViewById(R.id.progressBarCreatePaletteFromImage);
+        toggleLoading(true);
 
         // Set up colors array
 
@@ -231,12 +235,14 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         this.client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                toggleLoading(false);
                 e.printStackTrace();
                 getActivity().runOnUiThread(onFail);
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                toggleLoading(false);
                 if(response.isSuccessful()){
                     String bodyString = response.body().string();
 
@@ -343,5 +349,13 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         }
 
         return null;
+    }
+
+    private void toggleLoading(Boolean show){
+        if(show){
+            this.loading_asset.setVisibility(View.VISIBLE);
+        } else {
+            this.loading_asset.setVisibility(View.INVISIBLE);
+        }
     }
 }
