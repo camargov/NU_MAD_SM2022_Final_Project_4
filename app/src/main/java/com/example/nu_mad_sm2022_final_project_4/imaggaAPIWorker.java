@@ -97,7 +97,7 @@ public class imaggaAPIWorker implements Runnable{
 //        request_bundle.putString("request",register_request.toString());
 //        request_msg.setData(request_bundle);
 //
-//        try(Response response = client.newCall(register_request).execute()){
+//        try(Response response = client.newCall(register_request).enqueue()){
 //            if(response.isSuccessful()){
 //                Gson gson = new Gson();
 //                String responseMessage = response.body().string();

@@ -1,6 +1,7 @@
 package com.example.nu_mad_sm2022_final_project_4;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,34 +20,58 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+
 import java.io.InputStream;
-import java.io.DataOutputStream;
-import java.io.BufferedInputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.function.Function;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class CreatePaletteFromImageFragment extends Fragment implements View.OnClickListener {
+
     private Uri image_uri;
     private IToastFromFragmentToMain toastListener;
     private IAddFragment fragmentListener;
+
+    private final OkHttpClient client = new OkHttpClient();
 
     // UI Elements:
     private EditText editTextPaletteName;
     private Button buttonSeeMorePalettes, buttonSave;
     private ImageView imageView;
+    private ProgressBar loading_asset;
 
     // Setting up recyclerView
     private RecyclerView recyclerViewProminentColors;
@@ -53,7 +79,14 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
     private ArrayList<Integer> colors = new ArrayList<>();
 
+    public final String API_COLOR_URL = "https://api.imagga.com/v2/colors";
+
     private final String API_AUTHORIZATION = "Basic YWNjX2ZhZDljY2MxZmUzYzk4NDphMGRmM2ExYzk5ODRiMDUwODA1YTNjYTU1NzJlNWM1Nw==";
+
+    private static final String ARG_IMAGE_URI = "imageUri";
+    private String cloudFilepath;
+
+    private StorageReference upload_Path;
 
     public CreatePaletteFromImageFragment(Uri image_uri) {
         this.image_uri = image_uri;
@@ -62,8 +95,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     public static CreatePaletteFromImageFragment newInstance(Uri image_uri) {
         CreatePaletteFromImageFragment fragment = new CreatePaletteFromImageFragment(image_uri);
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
+        args.putParcelable(ARG_IMAGE_URI, image_uri);
         fragment.setArguments(args);
         return fragment;
     }
@@ -72,8 +104,9 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            this.image_uri = getArguments().getParcelable(ARG_IMAGE_URI);
         }
+        this.cloudFilepath = getPhotoPath();
     }
 
     @Override
@@ -90,14 +123,20 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         Picasso.get().load(image_uri).into(imageView);
         buttonSeeMorePalettes.setOnClickListener(this);
         buttonSave.setOnClickListener(this);
+        loading_asset = view.findViewById(R.id.progressBarCreatePaletteFromImage);
+        toggleLoading(true);
 
         // Set up colors array
 
-        try {
-            getColorsFromImagga();
-        } catch (IOException e) {
-            Log.d("CreatePaletteFromImageFragment", "onCreateView: " + e.getMessage());
-        }
+        uploadImage(uri -> {
+                getColorsFromImageJson(uri,
+                        () -> Toast.makeText(getContext(), "Error with request.", Toast.LENGTH_SHORT).show(),
+                        () -> Toast.makeText(getContext(), "Request was not Successful.", Toast.LENGTH_SHORT).show()
+                );
+                return null;
+        },
+                () -> Toast.makeText(getContext(), "Request was not Successful.", Toast.LENGTH_SHORT).show());
+
 
         // Setting up recyclerView
         recyclerViewProminentColors = view.findViewById(R.id.recyclerViewCreatePaletteFromImageProminentColors);
@@ -121,6 +160,39 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         }
     }
 
+
+    public void uploadImage(Function<Uri, Void> useDownloadUrl, Runnable onFail){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference root = storage.getReference();
+        StorageReference uploadPath = root.child(cloudFilepath);
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), image_uri);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+            uploadPath.putBytes(data)
+                    .addOnCompleteListener(task -> getActivity().runOnUiThread(() -> {
+                        uploadPath.getDownloadUrl()
+                                .addOnSuccessListener(useDownloadUrl::apply)
+                                .addOnFailureListener(e -> {
+                                    e.printStackTrace();
+                                    onFail.run();
+                                });
+                    }));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            onFail.run();
+        } catch (IOException e) {
+            e.printStackTrace();
+            onFail.run();
+        }
+    }
+    private String getPhotoPath() {
+        return String.format("photos/%d.jpg", System.currentTimeMillis());
+    }
+
+
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.buttonCreatePaletteFromImageSeeMorePalettes) {
@@ -132,7 +204,20 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
                 toastListener.toastFromFragment("Palette must have a name.");
             }
             else {
-                /*
+                String name = editTextPaletteName.getText().toString();
+                ColorPalette colorPalette = new ColorPalette(name,colors);
+                colorPalette.setUserId(Utils.getCurrentUserId());
+                colorPalette.setCloudPalette(true);
+                try {
+                    Utils.storePaletteLocally(getActivity(), colorPalette);
+                } catch(IOException e) {
+                    Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
+                }
+                Utils.uploadPalette(colorPalette,
+                        () -> getActivity().runOnUiThread(() -> savedPaletteSuccessfully()),
+                        () -> getActivity().runOnUiThread(() -> toastListener.toastFromFragment("Something went wrong; adding palette locally, try restarting later to re-sync public data with cloud")));
+            }
+            /*
             Map<String, Object> palette = new HashMap<>();
             palette.put("name", editTextPaletteName.getText().toString());
             palette.put("colors", colors);
@@ -143,9 +228,65 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
             .collection("palettes")
             .set(palette);
              */
-            }
         }
     }
+
+    public void getColorsFromImageJson(Uri downloadUri, Runnable onFail, Runnable onError){
+        File fileToUpload = new File(image_uri.toString());
+        HttpUrl url = HttpUrl.parse(API_COLOR_URL)
+                .newBuilder()
+                .addQueryParameter("image_url", downloadUri.toString())
+                .build();
+//        RequestBody body = new FormBody.Builder()
+//                .add("image_url",downloadUri.toString())
+//                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization",API_AUTHORIZATION)
+                .get()
+                .build();
+        this.client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                toggleLoading(false);
+                e.printStackTrace();
+                getActivity().runOnUiThread(onFail);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                toggleLoading(false);
+                if(response.isSuccessful()){
+                    String bodyString = response.body().string();
+
+                    Gson gson = new Gson();
+                    JsonObject result = gson.fromJson(bodyString,JsonObject.class).get("result").getAsJsonObject();
+                    JsonArray colors = result.get("colors").getAsJsonObject().get("image_colors").getAsJsonArray();
+                    List<String>html_colors = new ArrayList<>();
+                    for(int i=0;i<colors.size();i++){
+                        JsonObject color = colors.get(i).getAsJsonObject();
+                        String html_code = color.get("html_code").getAsString();
+
+                        html_colors.add(html_code);
+                    }
+                    String[] html_colors_arr = html_colors.toArray(new String[0]);
+                    getActivity().runOnUiThread(convertStringArrToInt(html_colors_arr));
+                } else {
+                    Log.d("getColorsFromImageJson", "onResponse: " + response.body().string());
+//                    getActivity().runOnUiThread(()->{
+//                        try {
+//                            Log.d("getColorsFromImageJson", "onResponse: " + response.body().string());
+//                        } catch (IOException e) {
+//                            Log.d("getColorsFromImageJson", "onResponse: error - " + e.getMessage());
+//                        }
+//                    });
+                    getActivity().runOnUiThread(onError);
+                }
+            }
+        });
+
+    }
+
 
     public void getColorsFromImagga() throws IOException {
         Thread worker = new Thread(new imaggaAPIWorker(image_uri,new Handler(new Handler.Callback() {
@@ -172,54 +313,25 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         worker.start();
     }
 
-    public void getColorsFromImage(){
-        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: ");
-        Thread worker = new Thread(new imaggaAPIWorker(image_uri, new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(@NonNull Message msg) {
-                Bundle receivedData = msg.getData();
-                switch(msg.what){
-                    case imaggaAPIWorker.STATUS_REQUEST:
-                        String request_msg = receivedData.getString("request");
-                        Log.d("CreatePaletteFromImageFragment", "imaggaAPIWorker - handleMessage: " + request_msg);
-                        break;
-                    case imaggaAPIWorker.STATUS_UNABLE_TO_EXECUTE:
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Unable to execute.");
-                        String error = receivedData.getString("error");
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage error message: " + error);
-                        Toast.makeText(getActivity(), "We were unable process your image. Please wait and try again.", Toast.LENGTH_SHORT).show();
-                        break;
-                    case imaggaAPIWorker.STATUS_UNSUCESSFUL:
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Unsucessful.");
-
-                        Toast.makeText(getActivity(), "We were unable to connect to the API, please ensure you have a stable internet connection.", Toast.LENGTH_SHORT).show();
-                        break;
-                    case imaggaAPIWorker.STATUS_SUCCESS_COLORS_RETRIEVED:
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Success.");
-                        String upload_id = receivedData.getString("upload_id");
-                        Log.d("CreatePaletteFromImageFragment", "handleMessage - upload_id:" + upload_id);
-                        String[] html_colors = receivedData.getStringArray(imaggaAPIWorker.COLOR_ARRAY_KEY);
-                        StringBuilder colorsAsString = new StringBuilder();
-                        for(String color: html_colors){
-                            colorsAsString.append(color);
-                            colorsAsString.append("\n");
-                        }
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: " + colorsAsString.toString() );
-                        convertStringArrToInt(html_colors);
-                        break;
-
-                }
-                return false;
-            }
-        })),"imagga worker");
-        worker.start();
-    }
-
-    private void convertStringArrToInt(String[] arr){
+    private Runnable convertStringArrToInt(String[] arr){
         colors.clear();
         for (int i = 0; i < arr.length; i++) {
             colors.add(Integer.parseInt(arr[i].substring(1), 16) + 0xFF000000);
+            getActivity().runOnUiThread(()->recyclerViewAdapter.notifyDataSetChanged());
         }
 
+        return null;
+    }
+
+    private void toggleLoading(Boolean show){
+        if(show){
+            this.loading_asset.setVisibility(View.VISIBLE);
+        } else {
+            this.loading_asset.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void savedPaletteSuccessfully() {
+        toastListener.toastFromFragment("Palette saved successfully!");
     }
 }

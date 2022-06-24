@@ -56,6 +56,9 @@ public class ColorDescriptionRowAdapter extends RecyclerView.Adapter<ColorDescri
 
         // Setting the hex and rgb values
         String hexColor = Integer.toHexString(colors.get(position) - 0xFF000000);
+        while(hexColor.length()!=6){
+            hexColor = "0"+hexColor;
+        }
         holder.getTextViewHex().setText("#" + hexColor.toUpperCase());
         holder.getTextViewRGB().setText(convertHexToRGB(hexColor));
     }
