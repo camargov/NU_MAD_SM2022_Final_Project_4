@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -31,6 +32,9 @@ public class EditPaletteFragment extends CreatePaletteManuallyFragment {
     private static final String ARG_PALETTE_NAME = "paletteName";
 
     private ColorPalette palette;
+
+    private View.OnClickListener saveListener;
+    private View.OnClickListener deleteListener;
 
     public EditPaletteFragment() {
 
@@ -63,20 +67,12 @@ public class EditPaletteFragment extends CreatePaletteManuallyFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        editTextPaletteName.setText(palette.getName());
-        makePublic.setChecked(palette.getCloudPalette());
-        List<String> currentColors = palette.getColors().stream()
-                .map(val -> String.format("#%06X", val & 0x00FFFFFF))
-                .collect(Collectors.toList());
-        colors.addAll(currentColors);
-        recyclerViewAdapter.notifyDataSetChanged();
+        delete.setVisibility(View.VISIBLE);
+        delete.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            switchSaveButton(isChecked);
+        });
 
-        return view;
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.buttonCreatePaletteManuallySave) {
+        this.saveListener = v -> {
             if (colors.size() == 0) {
                 toastListener.toastFromFragment("Palette must have at least one color.");
             }
@@ -106,8 +102,49 @@ public class EditPaletteFragment extends CreatePaletteManuallyFragment {
                     }
                 }
             }
+        };
+        this.deleteListener = v -> {
+            try {
+                Utils.deletePaletteLocally(getActivity(), palette);
+                Utils.syncLocalPaletteDataToCloud(
+                        getActivity(),
+                        fragmentListener::addCreatePaletteOptionsFragment,
+                        () -> {
+                            Toast.makeText(getActivity(), "Something went wrong with deletion, try again later!", Toast.LENGTH_LONG).show();
+                            fragmentListener.addCreatePaletteOptionsFragment();
+                        },
+                        true);
+            } catch (IOException e) {
+                Toast.makeText(getActivity(), "Something went wrong with deletion, try again later!", Toast.LENGTH_LONG).show();
+                fragmentListener.addCreatePaletteOptionsFragment();
+            }
+        };
+
+        editTextPaletteName.setText(palette.getName());
+        makePublic.setChecked(palette.getCloudPalette());
+        List<String> currentColors = palette.getColors().stream()
+                .map(val -> String.format("#%06X", val & 0x00FFFFFF))
+                .collect(Collectors.toList());
+        colors.addAll(currentColors);
+        recyclerViewAdapter.notifyDataSetChanged();
+
+        return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.buttonCreatePaletteManuallySave) {
+            if (delete.isChecked()) {
+                deleteListener.onClick(buttonSave);
+            } else {
+                saveListener.onClick(buttonSave);
+            }
         } else {
             super.onClick(v);
         }
+    }
+
+    private void switchSaveButton(boolean deleteActive) {
+        buttonSave.setText(deleteActive ? "DELETE" : "SAVE");
     }
 }

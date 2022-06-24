@@ -37,7 +37,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     protected Button buttonSave;
     private Button buttonAdd;
     private TextView textViewAddColorHex;
-    protected CheckBox makePublic;
+    protected CheckBox makePublic, delete;
 
     // RecyclerView-related items
     private RecyclerView recyclerView;
@@ -80,6 +80,8 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         recyclerView.setAdapter(recyclerViewAdapter);
 
         makePublic = view.findViewById(R.id.createPaletteManually_checkBox_makeCloud);
+        delete = view.findViewById(R.id.editPalette_checkBox_delete);
+        delete.setVisibility(View.GONE);
 
         return view;
     }

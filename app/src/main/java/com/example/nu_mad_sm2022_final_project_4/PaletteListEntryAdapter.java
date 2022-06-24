@@ -43,26 +43,12 @@ public class PaletteListEntryAdapter extends ArrayAdapter<ColorPalette> {
         LinearLayout colorList = convertView.findViewById(R.id.paletteList_linearLayout_palettes);
         colorList.removeAllViews();
         Button edit = convertView.findViewById(R.id.paletteList_button_edit);
-        Button delete = convertView.findViewById(R.id.paletteList_button_delete);
 
         name.setText(palette.getName());
         int editVisibility = userOwnedPalette ? View.VISIBLE : View.INVISIBLE;
         edit.setVisibility(editVisibility);
-        delete.setVisibility(editVisibility);
         if (userOwnedPalette) {
             edit.setOnClickListener(view -> addFragment.addEditPaletteFragment(palette));
-            delete.setOnClickListener(view -> {
-                try {
-                    Utils.deletePaletteLocally((Context)addFragment, palette);
-                    Utils.syncLocalPaletteDataToCloud(
-                            (Context)addFragment,
-                            addFragment::addCreatePaletteOptionsFragment,
-                            addFragment::addCreatePaletteOptionsFragment,
-                            true);
-                } catch (IOException e) {
-                    // cry
-                }
-            });
         }
 
         PaletteColorsViewAdapter adapter = new PaletteColorsViewAdapter(this.getContext(), palette.getColors());
