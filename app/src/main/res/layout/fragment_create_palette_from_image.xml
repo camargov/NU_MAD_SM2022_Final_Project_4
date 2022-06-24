@@ -32,19 +32,6 @@
         app:layout_constraintTop_toBottomOf="@+id/editTextCreatePaletteFromImageName"
         tools:src="@tools:sample/backgrounds/scenic" />
 
-    <Button
-        android:id="@+id/buttonCreatePaletteFromImageSeeMorePalettes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:backgroundTint="#7F73FD"
-        android:fontFamily="@font/poppins_medium"
-        android:text="@string/see_more_palettes"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/buttonCreatePaletteFromImageSave"
-        app:layout_constraintStart_toEndOf="@+id/buttonCreatePaletteFromImageSave"
-        app:layout_constraintTop_toTopOf="@+id/buttonCreatePaletteFromImageSave" />
-
     <TextView
         android:id="@+id/textViewCreatePaletteFromImage"
         android:layout_width="wrap_content"
@@ -61,13 +48,13 @@
         android:id="@+id/buttonCreatePaletteFromImageSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="55dp"
         android:layout_marginBottom="32dp"
         android:backgroundTint="#EC008C"
         android:fontFamily="@font/poppins_medium"
         android:text="@string/button_save"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar

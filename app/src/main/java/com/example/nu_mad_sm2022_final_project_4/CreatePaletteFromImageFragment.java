@@ -63,13 +63,12 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
     private Uri image_uri;
     private IToastFromFragmentToMain toastListener;
-    private IAddFragment fragmentListener;
 
     private final OkHttpClient client = new OkHttpClient();
 
     // UI Elements:
     private EditText editTextPaletteName;
-    private Button buttonSeeMorePalettes, buttonSave;
+    private Button buttonSave;
     private ImageView imageView;
     private ProgressBar loading_asset;
 
@@ -117,11 +116,9 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
         // Defining UI Elements:
         editTextPaletteName = view.findViewById(R.id.editTextCreatePaletteFromImageName);
-        buttonSeeMorePalettes = view.findViewById(R.id.buttonCreatePaletteFromImageSeeMorePalettes);
         buttonSave = view.findViewById(R.id.buttonCreatePaletteFromImageSave);
         imageView = view.findViewById(R.id.imageViewCreatePaletteFromImage);
         Picasso.get().load(image_uri).into(imageView);
-        buttonSeeMorePalettes.setOnClickListener(this);
         buttonSave.setOnClickListener(this);
         loading_asset = view.findViewById(R.id.progressBarCreatePaletteFromImage);
         toggleLoading(true);
@@ -154,9 +151,6 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
         if (context instanceof IToastFromFragmentToMain) {
             toastListener = (IToastFromFragmentToMain) context;
-        }
-        if (context instanceof IAddFragment) {
-            fragmentListener = (IAddFragment) context;
         }
     }
 
@@ -195,11 +189,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.buttonCreatePaletteFromImageSeeMorePalettes) {
-            // pass this to the next fragment for when user chooses another palette or for a back button
-            fragmentListener.addCreatePaletteFromImageSeeMorePalettesFragment();
-        }
-        else if (v.getId() == R.id.buttonCreatePaletteFromImageSave) {
+        if (v.getId() == R.id.buttonCreatePaletteFromImageSave) {
             if (editTextPaletteName.getText().toString().equals("")) {
                 toastListener.toastFromFragment("Palette must have a name.");
             }
