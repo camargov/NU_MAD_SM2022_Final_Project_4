@@ -56,4 +56,5 @@
     <string name="back">Back</string>
     <string name="make_public">Make Public</string>
     <string name="palette_edit_button">Edit</string>
+    <string name="palette_delete_button">Delete</string>
 </resources>

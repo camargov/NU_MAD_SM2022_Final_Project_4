@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
 import java.util.List;
 
 public class PaletteListEntryAdapter extends ArrayAdapter<ColorPalette> {
@@ -42,11 +43,26 @@ public class PaletteListEntryAdapter extends ArrayAdapter<ColorPalette> {
         LinearLayout colorList = convertView.findViewById(R.id.paletteList_linearLayout_palettes);
         colorList.removeAllViews();
         Button edit = convertView.findViewById(R.id.paletteList_button_edit);
+        Button delete = convertView.findViewById(R.id.paletteList_button_delete);
 
         name.setText(palette.getName());
-        edit.setVisibility(userOwnedPalette ? View.VISIBLE : View.INVISIBLE);
+        int editVisibility = userOwnedPalette ? View.VISIBLE : View.INVISIBLE;
+        edit.setVisibility(editVisibility);
+        delete.setVisibility(editVisibility);
         if (userOwnedPalette) {
             edit.setOnClickListener(view -> addFragment.addEditPaletteFragment(palette));
+            delete.setOnClickListener(view -> {
+                try {
+                    Utils.deletePaletteLocally((Context)addFragment, palette);
+                    Utils.syncLocalPaletteDataToCloud(
+                            (Context)addFragment,
+                            addFragment::addCreatePaletteOptionsFragment,
+                            addFragment::addCreatePaletteOptionsFragment,
+                            true);
+                } catch (IOException e) {
+                    // cry
+                }
+            });
         }
 
         PaletteColorsViewAdapter adapter = new PaletteColorsViewAdapter(this.getContext(), palette.getColors());

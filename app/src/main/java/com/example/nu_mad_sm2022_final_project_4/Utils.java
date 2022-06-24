@@ -109,35 +109,40 @@ public class Utils {
             // Palette name is taken :(
             return false;
         }
-        List<ColorPalette> paletteData = readPalettesLocally(context);
-        paletteData.add(palette);
-        overwritePaletteData(context, paletteData);
+        List<ColorPalette> newData = new ArrayList<>();
+        newData.add(palette);
+        newData.addAll(readPalettesLocally(context));
+        overwritePaletteData(context, newData);
         return true;
     }
 
-    public static boolean replacePaletteLocally(Context context, ColorPalette oldPalette, ColorPalette palette) throws IOException {
-        if (paletteNameAvailable(context, oldPalette.getName())) {
+    public static boolean deletePaletteLocally(Context context, ColorPalette palette) throws IOException {
+        if (paletteNameAvailable(context, palette.getName())) {
             // Palette doesn't exist
-            return false;
-        }
-        if (!paletteNameAvailable(context, palette.getName()) && !oldPalette.getName().equals(palette.getName())) {
-            // New palette name is bad
             return false;
         }
 
         List<ColorPalette> paletteData = readPalettesLocally(context);
         for(int i = 0; i < paletteData.size(); i++) {
-            if (paletteData.get(i).getName().equals(oldPalette.getName())) {
+            if (paletteData.get(i).getName().equals(palette.getName())) {
                 paletteData.remove(i);
                 break;
             }
         }
 
-        List<ColorPalette> newData = new ArrayList<>();
-        newData.add(palette);
-        newData.addAll(paletteData);
+        overwritePaletteData(context, paletteData);
 
-        overwritePaletteData(context, newData);
+        return true;
+    }
+
+    public static boolean replacePaletteLocally(Context context, ColorPalette oldPalette, ColorPalette palette) throws IOException {
+        if (!paletteNameAvailable(context, palette.getName()) && !oldPalette.getName().equals(palette.getName())) {
+            // New palette name is bad
+            return false;
+        }
+
+        deletePaletteLocally(context, oldPalette);
+        storePaletteLocally(context, palette);
 
         return true;
     }
