@@ -10,4 +10,5 @@ public interface IAddFragment {
     void addLogInFragment();
     void addRegisterFragment();
     void addOnboardingFragment();
+    void addEditPaletteFragment(ColorPalette palette);
 }

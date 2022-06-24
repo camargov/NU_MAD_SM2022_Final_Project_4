@@ -3,27 +3,30 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_camera.xml" value="0.1" />
-        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_create_palette_manually.xml" value="0.264" />
-        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/listview_palette.xml" value="0.10435663627152988" />
+        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_create_palette_manually.xml" value="0.536" />
+        <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/listview_palette.xml" value="0.5285359801488834" />
         <entry key="..\:/AndroidProjects/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/listview_palette_color.xml" value="0.10435663627152988" />
-        <entry key="..\:/CS4520/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_camera.xml" value="0.2625" />
-        <entry key="..\:/CS4520/NU_MAD_SM2022_Final_Project_4/app/src/main/res/layout/fragment_create_palette_from_image.xml" value="0.5541666666666667" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.274534717504529" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.22663282914595162" />
         <entry key="app/src/main/res/layout/big_palette_color_view.xml" value="0.34208526611328127" />
         <entry key="app/src/main/res/layout/color_palette_description_row.xml" value="0.35844268798828127" />
-        <entry key="app/src/main/res/layout/create_palette_manually_add_color.xml" value="0.2196071682729982" />
+        <entry key="app/src/main/res/layout/create_palette_manually_add_color.xml" value="0.3532299099722168" />
         <entry key="app/src/main/res/layout/explore_search_color_row.xml" value="0.3568812417342524" />
         <entry key="app/src/main/res/layout/fragment_camera.xml" value="0.3072916666666667" />
         <entry key="app/src/main/res/layout/fragment_create_palette.xml" value="0.4526149745890917" />
         <entry key="app/src/main/res/layout/fragment_create_palette_from_image.xml" value="0.26688066565472146" />
         <entry key="app/src/main/res/layout/fragment_create_palette_from_image_see_more_palettes.xml" value="0.31508890787760424" />
-        <entry key="app/src/main/res/layout/fragment_create_palette_manually.xml" value="0.39698413694036844" />
+        <entry key="app/src/main/res/layout/fragment_create_palette_manually.xml" value="0.2940269836200559" />
         <entry key="app/src/main/res/layout/fragment_create_palette_options.xml" value="0.250226780988168" />
         <entry key="app/src/main/res/layout/fragment_display_photo_gallery.xml" value="0.20425724637681159" />
-        <entry key="app/src/main/res/layout/fragment_explore.xml" value="0.24520739126896526" />
+        <entry key="app/src/main/res/layout/fragment_explore.xml" value="0.4025562473985016" />
         <entry key="app/src/main/res/layout/fragment_explore_search_result.xml" value="0.2987213577049367" />
-        <entry key="app/src/main/res/layout/fragment_favorite.xml" value="0.2128623188405797" />
+        <entry key="app/src/main/res/layout/fragment_favorite.xml" value="0.33471900829370477" />
+        <entry key="app/src/main/res/layout/fragment_log_in.xml" value="0.24353876739562624" />
+        <entry key="app/src/main/res/layout/fragment_picture_item.xml" value="0.5186935424804688" />
+        <entry key="app/src/main/res/layout/fragment_register.xml" value="0.23113207547169812" />
+        <entry key="app/src/main/res/layout/fragment_register_log_in.xml" value="0.25795201047454797" />
         <entry key="app/src/main/res/layout/listview_palette.xml" value="0.20425724637681159" />
         <entry key="app/src/main/res/layout/listview_palette_color.xml" value="0.20425724637681159" />
       </map>
