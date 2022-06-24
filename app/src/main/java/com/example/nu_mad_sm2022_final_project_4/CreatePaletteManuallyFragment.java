@@ -27,22 +27,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CreatePaletteManuallyFragment extends Fragment implements View.OnClickListener {
-    private IAddFragment fragmentListener;
-    private IToastFromFragmentToMain toastListener;
+    protected IAddFragment fragmentListener;
+    protected IToastFromFragmentToMain toastListener;
     private boolean isAddButton = true;
     private int colorPosition;
 
     // UI Elements
-    private EditText editTextPaletteName, editTextColorHexCode;
-    private Button buttonSave, buttonAdd;
+    protected EditText editTextPaletteName, editTextColorHexCode;
+    protected Button buttonSave;
+    private Button buttonAdd;
     private TextView textViewAddColorHex;
-    private CheckBox makePublic;
+    protected CheckBox makePublic, delete;
 
     // RecyclerView-related items
     private RecyclerView recyclerView;
-    private AddColorManuallyAdapter recyclerViewAdapter;
+    protected AddColorManuallyAdapter recyclerViewAdapter;
     private RecyclerView.LayoutManager recyclerViewLayoutManager;
-    private ArrayList<String> colors = new ArrayList<>();
+    protected ArrayList<String> colors = new ArrayList<>();
 
     public CreatePaletteManuallyFragment() {}
 
@@ -79,6 +80,8 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         recyclerView.setAdapter(recyclerViewAdapter);
 
         makePublic = view.findViewById(R.id.createPaletteManually_checkBox_makeCloud);
+        delete = view.findViewById(R.id.editPalette_checkBox_delete);
+        delete.setVisibility(View.GONE);
 
         return view;
     }
@@ -126,7 +129,10 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
                     }
 
                     try {
-                        Utils.storePaletteLocally(getActivity(), newPalette);
+                        if (!Utils.storePaletteLocally(getActivity(), newPalette)) {
+                            Toast.makeText(getActivity(), "The new palette name is already taken!", Toast.LENGTH_LONG).show();
+                            return;
+                        }
                     } catch(IOException e) {
                         Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
                     }
@@ -146,7 +152,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
     }
 
     private void addHexFormat(String hexCode) {
-        if ((hexCode.substring(0, 1).equals("#") && hexCode.length() == 7)
+        if ((hexCode.charAt(0) == '#' && hexCode.length() == 7)
         || (hexCode.length() == 6)) {
             boolean validChar = true;
             for (int i = 1; i < hexCode.length(); i++) {
@@ -194,7 +200,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         colorPosition = position;
     }
 
-    private List<Integer> convertColorsToInt() {
+    protected List<Integer> convertColorsToInt() {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < colors.size(); i++) {
             list.add(Integer.parseInt(colors.get(i).substring(1), 16) + 0xFF000000);

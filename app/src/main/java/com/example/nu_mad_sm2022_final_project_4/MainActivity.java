@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     final String LOG_IN_FRAGMENT = "LOG_IN_FRAGMENT";
     final String REGISTER_FRAGMENT = "REGISTER_FRAGMENT";
     final String ONBOARDING_FRAGMENT = "ONBOARDING_FRAGMENT";
+    final String EDIT_PALETTE_FRAGMENT = "EDIT_PALETTE_FRAGMENT";
 
     private ImageView imageViewFavorite, imageViewAddPalette, imageViewExplore;
     private Button logout;
@@ -174,6 +175,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.setNavVisibility(false);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentConstraintLayout, RegisterLogInFragment.newInstance(), ONBOARDING_FRAGMENT)
+                .commit();
+    }
+
+    @Override
+    public void addEditPaletteFragment(ColorPalette palette) {
+        this.setNavVisibility(true);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentConstraintLayout, EditPaletteFragment.newInstance(palette), EDIT_PALETTE_FRAGMENT)
                 .commit();
     }
 

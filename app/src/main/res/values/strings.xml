@@ -55,4 +55,7 @@
     <string name="logout_button">Log Out</string>
     <string name="back">Back</string>
     <string name="make_public">Make Public</string>
+    <string name="palette_edit_button">Edit</string>
+    <string name="palette_delete_button">Delete</string>
+    <string name="edit_palette_delete_warning">Click to DELETE</string>
 </resources>

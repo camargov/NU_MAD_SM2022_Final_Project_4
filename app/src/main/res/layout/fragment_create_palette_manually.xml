@@ -81,6 +81,8 @@
         android:id="@+id/buttonCreatePaletteManuallySave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="32dp"
         android:backgroundTint="#EC008C"
         android:fontFamily="@font/poppins_medium"
@@ -127,6 +129,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/buttonCreatePaletteManuallySave"
+        app:layout_constraintTop_toTopOf="@+id/buttonCreatePaletteManuallySave" />
+
+    <CheckBox
+        android:id="@+id/editPalette_checkBox_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_palette_delete_warning"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonCreatePaletteManuallySave"
+        app:layout_constraintEnd_toStartOf="@+id/buttonCreatePaletteManuallySave"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/buttonCreatePaletteManuallySave" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
