@@ -109,16 +109,42 @@ public class Utils {
             // Palette name is taken :(
             return false;
         }
-        JsonArray paletteData = loadPaletteData(context);
-        JsonElement paletteElement = getGson().toJsonTree(palette, ColorPalette.class);
-        paletteData.add(paletteElement);
-        syncPaletteData(context, paletteData);
+        List<ColorPalette> paletteData = readPalettesLocally(context);
+        paletteData.add(palette);
+        overwritePaletteData(context, paletteData);
+        return true;
+    }
+
+    public static boolean replacePaletteLocally(Context context, ColorPalette oldPalette, ColorPalette palette) throws IOException {
+        if (paletteNameAvailable(context, oldPalette.getName())) {
+            // Palette doesn't exist
+            return false;
+        }
+        if (!paletteNameAvailable(context, palette.getName()) && !oldPalette.getName().equals(palette.getName())) {
+            // New palette name is bad
+            return false;
+        }
+
+        List<ColorPalette> paletteData = readPalettesLocally(context);
+        for(int i = 0; i < paletteData.size(); i++) {
+            if (paletteData.get(i).getName().equals(oldPalette.getName())) {
+                paletteData.remove(i);
+                break;
+            }
+        }
+
+        List<ColorPalette> newData = new ArrayList<>();
+        newData.add(palette);
+        newData.addAll(paletteData);
+
+        overwritePaletteData(context, newData);
+
         return true;
     }
 
     public static List<ColorPalette> readPalettesLocally(Context context) throws IOException {
         String userId = getCurrentUserId();
-        return paletteListFromJson(loadPaletteData(context)).stream().filter(palette -> palette.getUserId().equals(getCurrentUserId())).collect(Collectors.toList());
+        return paletteListFromJson(loadPaletteData(context)).stream().filter(palette -> palette.getUserId().equals(userId)).collect(Collectors.toList());
     }
 
     public static boolean paletteNameAvailable(Context context, String name) throws IOException {
@@ -174,10 +200,14 @@ public class Utils {
         return (gsonCache = new Gson());
     }
 
+    public static void syncLocalPaletteDataToCloud(Context context, Runnable onSuccess, Runnable onFail) throws IOException {
+        syncLocalPaletteDataToCloud(context, onSuccess, onFail, false);
+    }
+
     // All palettes that are stored on the cloud should be stored locally,
     // and all palettes that are stored locally and marked as "cloudPalette"
     // should be on the cloud.
-    public static void syncLocalPaletteDataToCloud(Context context, Runnable onSuccess, Runnable onFail) throws IOException {
+    public static void syncLocalPaletteDataToCloud(Context context, Runnable onSuccess, Runnable onFail, boolean forceCloudResync) throws IOException {
         final List<ColorPalette> localPalettes = readPalettesLocally(context);
         localPalettes.sort(Comparator.comparing(ColorPalette::getName));
         final List<ColorPalette> markedCloudPalettes = localPalettes.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
@@ -192,7 +222,7 @@ public class Utils {
                 updateCloud = true;
                 cloudPalettes = cloudPalettes.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
             }
-            if (!checkSynced(localCopy, cloudPalettes)) {
+            if (!forceCloudResync && !checkSynced(localCopy, cloudPalettes)) {
                 updateLocal = true;
                 localCopy = combineData(cloudPalettes, localCopy);
                 markedCopy = localCopy.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
@@ -211,7 +241,7 @@ public class Utils {
                     return null;
                 }
             }
-            if (updateCloud) {
+            if (updateCloud || forceCloudResync) {
                 overwriteCloudData(cloudPalettes, onSuccess, onFail);
                 return null;
             }
@@ -230,7 +260,7 @@ public class Utils {
         while(l < palettesA.size() && c < palettesB.size()) {
             ColorPalette localPalette = palettesA.get(l);
             ColorPalette cloudPalette = palettesB.get(c);
-            if (cloudPalette.getName().equals(localPalette.getName())) {
+            if (cloudPalette.equals(localPalette)) {
                 c++;
             }
             l++;

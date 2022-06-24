@@ -50,6 +50,7 @@ public class PaletteListEntryAdapter extends ArrayAdapter<ColorPalette> {
 
         PaletteColorsViewAdapter adapter = new PaletteColorsViewAdapter(this.getContext(), palette.getColors());
         for(int i = 0; i < adapter.getCount(); i++) {
+            Log.d("demo", String.format("%s: %06X", palette.getName(), palette.getColors().get(i)));
             colorList.addView(adapter.getView(i, null, colorList));
         }
 

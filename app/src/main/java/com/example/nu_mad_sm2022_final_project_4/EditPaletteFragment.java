@@ -70,16 +70,44 @@ public class EditPaletteFragment extends CreatePaletteManuallyFragment {
                 .collect(Collectors.toList());
         colors.addAll(currentColors);
         recyclerViewAdapter.notifyDataSetChanged();
-        buttonSave.setOnClickListener(v -> {
-            // Update local data
-            // Resync everything
-        });
 
         return view;
     }
 
     @Override
     public void onClick(View v) {
-        super.onClick(v);
+        if (v.getId() == R.id.buttonCreatePaletteManuallySave) {
+            if (colors.size() == 0) {
+                toastListener.toastFromFragment("Palette must have at least one color.");
+            }
+            else {
+                if (editTextPaletteName.getText().toString().equals("")) {
+                    toastListener.toastFromFragment("Palette must have a name");
+                }
+                else {
+                    boolean makeCloud = makePublic.isChecked();
+                    String newName = editTextPaletteName.getText().toString();
+                    ColorPalette newPalette = new ColorPalette(
+                            newName,
+                            Utils.getCurrentUserId(),
+                            makeCloud,
+                            convertColorsToInt()
+                    );
+
+                    try {
+                        Utils.replacePaletteLocally(getActivity(), palette, newPalette);
+                        Utils.syncLocalPaletteDataToCloud(getActivity(), () -> fragmentListener.addCreatePaletteOptionsFragment(),
+                                () -> {
+                                    Toast.makeText(getActivity(), "Something went wrong; adding palette locally, try restarting later to re-sync public data with cloud", Toast.LENGTH_LONG).show();
+                                    fragmentListener.addCreatePaletteOptionsFragment();
+                                }, true);
+                    } catch(IOException e) {
+                        Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        } else {
+            super.onClick(v);
+        }
     }
 }
