@@ -50,6 +50,12 @@ public class AddColorManuallyAdapter extends RecyclerView.Adapter<AddColorManual
         public ConstraintLayout getConstraintLayout() {
             return constraintLayout;
         }
+
+        public void toggleClickability(boolean clickable){
+            textViewColorHex.setClickable(clickable);
+            imageViewEdit.setClickable(clickable);
+            imageViewTrash.setClickable(clickable);
+        }
     }
 
 

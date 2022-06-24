@@ -45,6 +45,7 @@ public class CreatePaletteOptionsFragment extends Fragment implements View.OnCli
         buttonAddPhoto.setOnClickListener(this);
         buttonManuallyAddColors = view.findViewById(R.id.buttonCreatePaletteOptionsManuallyAddColors);
         buttonManuallyAddColors.setOnClickListener(this);
+        toggleClickability(true);
 
         return view;
     }
@@ -60,14 +61,17 @@ public class CreatePaletteOptionsFragment extends Fragment implements View.OnCli
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.buttonCreatePaletteOptionsTakePhoto) {
+            toggleClickability(false);
             fragmentListener.addCameraFragment();
         }
         else if (v.getId() == R.id.buttonCreatePaletteOptionsAddPhoto) {
             Intent gallery_intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            toggleClickability(false);
             startActivityForResult(gallery_intent,3);
 //            fragmentListener.addDisplayPhotoGalleryFragment();
         }
         else if (v.getId() == R.id.buttonCreatePaletteOptionsManuallyAddColors) {
+            toggleClickability(false);
             fragmentListener.addCreatePaletteManuallyFragment();
         }
     }
@@ -81,6 +85,12 @@ public class CreatePaletteOptionsFragment extends Fragment implements View.OnCli
                 photoPickedInstance.photoPicked(selectedImage);
             }
         }
+    }
+
+    private void toggleClickability(boolean clickable){
+        buttonAddPhoto.setClickable(clickable);
+        buttonTakePhoto.setClickable(clickable);
+        buttonManuallyAddColors.setClickable(clickable);
     }
 
 }

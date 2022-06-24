@@ -32,7 +32,7 @@ public class RegisterLogInFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register_log_in, container, false);
-        getActivity().setTitle("Firebase Chat");
+        getActivity().setTitle("Patches");
         buttonRegister = view.findViewById(R.id.onboarding_button_register);
         buttonRegister.setOnClickListener(this);
         buttonLogIn = view.findViewById(R.id.onboarding_button_login);

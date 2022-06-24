@@ -189,9 +189,11 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
     @Override
     public void onClick(View v) {
+        toggleClickability(false);
         if (v.getId() == R.id.buttonCreatePaletteFromImageSave) {
             if (editTextPaletteName.getText().toString().equals("")) {
                 toastListener.toastFromFragment("Palette must have a name.");
+                toggleClickability(true);
             }
             else {
                 String name = editTextPaletteName.getText().toString();
@@ -202,6 +204,7 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
                     Utils.storePaletteLocally(getActivity(), colorPalette);
                 } catch(IOException e) {
                     Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
+                    toggleClickability(true);
                 }
                 Utils.uploadPalette(colorPalette,
                         () -> getActivity().runOnUiThread(() -> savedPaletteSuccessfully()),
@@ -323,5 +326,12 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
     private void savedPaletteSuccessfully() {
         toastListener.toastFromFragment("Palette saved successfully!");
+    }
+
+    private void toggleClickability(boolean clickable){
+        editTextPaletteName.setClickable(clickable);
+        buttonSave.setClickable(clickable);
+        imageView.setClickable(clickable);
+        recyclerViewProminentColors.setClickable(clickable);
     }
 }

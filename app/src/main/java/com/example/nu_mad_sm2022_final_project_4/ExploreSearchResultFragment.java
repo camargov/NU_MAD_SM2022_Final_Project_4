@@ -87,6 +87,7 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         for(int i = 0; i < linearLayoutAdapter.getCount(); i++) {
             linearLayout.addView(linearLayoutAdapter.getView(i, null, linearLayout));
         }
+        toggleClickability(true);
 
         return view;
     }
@@ -107,6 +108,7 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
             try {
                 Utils.storePaletteLocally(getActivity(), colorPalette);
             } catch(IOException e) {
+                toggleClickability(true);
                 Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
             }
             Utils.uploadPalette(colorPalette,
@@ -115,6 +117,7 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
         }
         else if (v.getId() == R.id.imageViewExploreSearchResultBack
                 || v.getId() == R.id.textViewExploreSearchResultBack) {
+            toggleClickability(false);
             getActivity().getSupportFragmentManager().popBackStack();
         }
     }
@@ -122,6 +125,14 @@ public class ExploreSearchResultFragment extends Fragment implements View.OnClic
     private void savedPaletteSuccessfully() {
         toastListener.toastFromFragment("Palette saved successfully!");
         buttonSavePalette.setText("Saved");
-        buttonSavePalette.setClickable(false);
+        toggleClickability(false);
+    }
+
+    private void toggleClickability(boolean clickable){
+        buttonSavePalette.setClickable(clickable);
+        textViewBack.setClickable(clickable);
+        textViewPaletteName.setClickable(clickable);
+        imageViewBack.setClickable(clickable);
+        recyclerView.setClickable(clickable);
     }
 }

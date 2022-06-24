@@ -82,6 +82,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
         makePublic = view.findViewById(R.id.createPaletteManually_checkBox_makeCloud);
         delete = view.findViewById(R.id.editPalette_checkBox_delete);
         delete.setVisibility(View.GONE);
+        toggleClickability(true);
 
         return view;
     }
@@ -141,6 +142,7 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
                             () -> getActivity().runOnUiThread(() -> fragmentListener.addCreatePaletteOptionsFragment()),
                             () -> getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Something went wrong; adding palette locally, try restarting later to re-sync public data with cloud", Toast.LENGTH_LONG).show()));
                     } else {
+                        toggleClickability(false);
                         fragmentListener.addCreatePaletteOptionsFragment();
                     }
                 }
@@ -206,5 +208,16 @@ public class CreatePaletteManuallyFragment extends Fragment implements View.OnCl
             list.add(Integer.parseInt(colors.get(i).substring(1), 16) + 0xFF000000);
         }
         return list;
+    }
+
+    private void toggleClickability(boolean clickable){
+        editTextPaletteName.setClickable(clickable);
+        editTextColorHexCode.setClickable(clickable);
+        buttonSave.setClickable(clickable);
+        buttonAdd.setClickable(clickable);
+        textViewAddColorHex.setClickable(clickable);
+        makePublic.setClickable(clickable);
+        delete.setClickable(clickable);
+        recyclerView.setClickable(clickable);
     }
 }
