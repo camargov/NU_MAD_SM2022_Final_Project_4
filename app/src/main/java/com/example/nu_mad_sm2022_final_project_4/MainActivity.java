@@ -146,15 +146,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void addCreatePaletteFromImageSeeMorePalettesFragment() {
-        this.setNavVisibility(true);
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentConstraintLayout, CreatePaletteFromImageSeeMorePalettesFragment.newInstance(), CREATE_PALETTE_FROM_IMAGE_SEE_MORE_PALETTES_FRAGMENT)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    @Override
     public void addLogInFragment() {
         this.setNavVisibility(false);
         getSupportFragmentManager().beginTransaction()
