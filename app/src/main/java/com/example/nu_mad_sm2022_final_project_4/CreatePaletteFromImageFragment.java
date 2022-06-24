@@ -28,6 +28,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
@@ -203,7 +204,20 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
                 toastListener.toastFromFragment("Palette must have a name.");
             }
             else {
-                /*
+                String name = editTextPaletteName.getText().toString();
+                ColorPalette colorPalette = new ColorPalette(name,colors);
+                colorPalette.setUserId(Utils.getCurrentUserId());
+                colorPalette.setCloudPalette(true);
+                try {
+                    Utils.storePaletteLocally(getActivity(), colorPalette);
+                } catch(IOException e) {
+                    Toast.makeText(getActivity(), "Something went wrong!", Toast.LENGTH_LONG).show();
+                }
+                Utils.uploadPalette(colorPalette,
+                        () -> getActivity().runOnUiThread(() -> savedPaletteSuccessfully()),
+                        () -> getActivity().runOnUiThread(() -> toastListener.toastFromFragment("Something went wrong; adding palette locally, try restarting later to re-sync public data with cloud")));
+            }
+            /*
             Map<String, Object> palette = new HashMap<>();
             palette.put("name", editTextPaletteName.getText().toString());
             palette.put("colors", colors);
@@ -214,7 +228,6 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
             .collection("palettes")
             .set(palette);
              */
-            }
         }
     }
 
@@ -248,11 +261,12 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
 
                     Gson gson = new Gson();
                     JsonObject result = gson.fromJson(bodyString,JsonObject.class).get("result").getAsJsonObject();
-                    JsonArray colors = result.get("colors").getAsJsonObject().get("background_colors").getAsJsonArray();
+                    JsonArray colors = result.get("colors").getAsJsonObject().get("image_colors").getAsJsonArray();
                     List<String>html_colors = new ArrayList<>();
                     for(int i=0;i<colors.size();i++){
                         JsonObject color = colors.get(i).getAsJsonObject();
                         String html_code = color.get("html_code").getAsString();
+
                         html_colors.add(html_code);
                     }
                     String[] html_colors_arr = html_colors.toArray(new String[0]);
@@ -299,53 +313,11 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         worker.start();
     }
 
-    public void getColorsFromImage(){
-        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: ");
-        Thread worker = new Thread(new imaggaAPIWorker(image_uri, new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(@NonNull Message msg) {
-                Bundle receivedData = msg.getData();
-                switch(msg.what){
-                    case imaggaAPIWorker.STATUS_REQUEST:
-                        String request_msg = receivedData.getString("request");
-                        Log.d("CreatePaletteFromImageFragment", "imaggaAPIWorker - handleMessage: " + request_msg);
-                        break;
-                    case imaggaAPIWorker.STATUS_UNABLE_TO_EXECUTE:
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Unable to execute.");
-                        String error = receivedData.getString("error");
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage error message: " + error);
-                        Toast.makeText(getActivity(), "We were unable process your image. Please wait and try again.", Toast.LENGTH_SHORT).show();
-                        break;
-                    case imaggaAPIWorker.STATUS_UNSUCESSFUL:
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Unsucessful.");
-
-                        Toast.makeText(getActivity(), "We were unable to connect to the API, please ensure you have a stable internet connection.", Toast.LENGTH_SHORT).show();
-                        break;
-                    case imaggaAPIWorker.STATUS_SUCCESS_COLORS_RETRIEVED:
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: immagaAPIWorker Success.");
-                        String upload_id = receivedData.getString("upload_id");
-                        Log.d("CreatePaletteFromImageFragment", "handleMessage - upload_id:" + upload_id);
-                        String[] html_colors = receivedData.getStringArray(imaggaAPIWorker.COLOR_ARRAY_KEY);
-                        StringBuilder colorsAsString = new StringBuilder();
-                        for(String color: html_colors){
-                            colorsAsString.append(color);
-                            colorsAsString.append("\n");
-                        }
-                        Log.d("CreatePaletteFromImageFragment", "getColorsFromImage: handleMessage: " + colorsAsString.toString() );
-                        convertStringArrToInt(html_colors);
-                        break;
-
-                }
-                return false;
-            }
-        })),"imagga worker");
-        worker.start();
-    }
-
     private Runnable convertStringArrToInt(String[] arr){
         colors.clear();
         for (int i = 0; i < arr.length; i++) {
             colors.add(Integer.parseInt(arr[i].substring(1), 16) + 0xFF000000);
+            getActivity().runOnUiThread(()->recyclerViewAdapter.notifyDataSetChanged());
         }
 
         return null;
@@ -357,5 +329,9 @@ public class CreatePaletteFromImageFragment extends Fragment implements View.OnC
         } else {
             this.loading_asset.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void savedPaletteSuccessfully() {
+        toastListener.toastFromFragment("Palette saved successfully!");
     }
 }
