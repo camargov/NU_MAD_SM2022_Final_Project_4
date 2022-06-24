@@ -40,6 +40,7 @@ public class PaletteListEntryAdapter extends ArrayAdapter<ColorPalette> {
 
         TextView name = convertView.findViewById(R.id.paletteList_textView_name);
         LinearLayout colorList = convertView.findViewById(R.id.paletteList_linearLayout_palettes);
+        colorList.removeAllViews();
         Button edit = convertView.findViewById(R.id.paletteList_button_edit);
 
         name.setText(palette.getName());
@@ -50,7 +51,6 @@ public class PaletteListEntryAdapter extends ArrayAdapter<ColorPalette> {
 
         PaletteColorsViewAdapter adapter = new PaletteColorsViewAdapter(this.getContext(), palette.getColors());
         for(int i = 0; i < adapter.getCount(); i++) {
-            Log.d("demo", String.format("%s: %06X", palette.getName(), palette.getColors().get(i)));
             colorList.addView(adapter.getView(i, null, colorList));
         }
 
