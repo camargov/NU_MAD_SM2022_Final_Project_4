@@ -207,6 +207,9 @@ public class Utils {
     // All palettes that are stored on the cloud should be stored locally,
     // and all palettes that are stored locally and marked as "cloudPalette"
     // should be on the cloud.
+
+    // forceCloudResync being true means that local data is correct, and cloud
+    // should be reset to local data.
     public static void syncLocalPaletteDataToCloud(Context context, Runnable onSuccess, Runnable onFail, boolean forceCloudResync) throws IOException {
         final List<ColorPalette> localPalettes = readPalettesLocally(context);
         localPalettes.sort(Comparator.comparing(ColorPalette::getName));
@@ -218,18 +221,22 @@ public class Utils {
             List<ColorPalette> localCopy = new ArrayList<>(localPalettes);
             List<ColorPalette> markedCopy = new ArrayList<>(markedCloudPalettes);
             cloudPalettes.sort(Comparator.comparing(ColorPalette::getName));
-            if (checkForUnmarkedData(cloudPalettes)) {
-                updateCloud = true;
-                cloudPalettes = cloudPalettes.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
-            }
-            if (!forceCloudResync && !checkSynced(localCopy, cloudPalettes)) {
-                updateLocal = true;
-                localCopy = combineData(cloudPalettes, localCopy);
-                markedCopy = localCopy.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
-            }
-            if (!checkSynced(cloudPalettes, markedCopy)) {
-                updateCloud =  true;
-                cloudPalettes = combineData(markedCopy, cloudPalettes);
+            if (!forceCloudResync) {
+                if (checkForUnmarkedData(cloudPalettes)) {
+                    updateCloud = true;
+                    cloudPalettes = cloudPalettes.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
+                }
+                if (!checkSynced(localCopy, cloudPalettes)) {
+                    updateLocal = true;
+                    localCopy = combineData(cloudPalettes, localCopy);
+                    markedCopy = localCopy.stream().filter(ColorPalette::getCloudPalette).collect(Collectors.toList());
+                }
+                if (!checkSynced(cloudPalettes, markedCopy)) {
+                    updateCloud =  true;
+                    cloudPalettes = combineData(markedCopy, cloudPalettes);
+                }
+            } else {
+                cloudPalettes = markedCopy;
             }
 
             if (updateLocal) {
