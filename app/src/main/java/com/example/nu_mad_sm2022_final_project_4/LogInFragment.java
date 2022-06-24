@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -32,6 +33,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
     // UI Elements
     private EditText editTextUsername, editTextPassword;
     private Button buttonLogIn;
+    private ImageView backbutton;
 
     // Firebase-related items
     private FirebaseAuth mAuth;
@@ -65,8 +67,10 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         editTextUsername = view.findViewById(R.id.login_editText_username);
         editTextPassword = view.findViewById(R.id.login_editText_password);
         buttonLogIn = view.findViewById(R.id.login_button);
-        buttonLogIn.setClickable(true);
         buttonLogIn.setOnClickListener(this);
+        backbutton = view.findViewById(R.id.login_imageView_backbutton);
+        backbutton.setOnClickListener(this);
+        toggleClickable(true);
 
         return view;
     }
@@ -85,13 +89,17 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.login_button) {
+        if(v.getId() == R.id.login_imageView_backbutton){
+            this.toggleClickable(false);
+            fragmentListener.addOnboardingFragment();
+        }
+        else if (v.getId() == R.id.login_button) {
             if (editTextUsername.getText().toString().equals("")
                     || editTextPassword.getText().toString().equals("")) {
                 toastListener.toastFromFragment("Username and Password must not be empty.");
             }
             else {
-                buttonLogIn.setClickable(false);
+                this.toggleClickable(false);
                 getEmail(editTextUsername.getText().toString());
             }
         }
@@ -161,5 +169,11 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                         buttonLogIn.setClickable(true);
                     }
                 });
+    }
+    private void toggleClickable(Boolean clickable){
+            editTextUsername.setClickable(clickable);
+            editTextPassword.setClickable(clickable);
+            buttonLogIn.setClickable(clickable);
+            backbutton.setClickable(clickable);
     }
 }

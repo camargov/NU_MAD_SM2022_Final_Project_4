@@ -31,6 +31,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     private EditText editTextUsername, editTextEmail,
             editTextPassword, editTextRepeatPassword;
     private Button buttonRegister;
+    private ImageView backButton;
 
     // Firebase-related items
     private FirebaseAuth mAuth;
@@ -75,6 +76,9 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         buttonRegister = view.findViewById(R.id.register_button);
         buttonRegister.setClickable(true);
         buttonRegister.setOnClickListener(this);
+        backButton = view.findViewById(R.id.register_imageView_backbutton);
+        backButton.setClickable(true);
+        backButton.setOnClickListener(this);
 
         return view;
     }
@@ -93,9 +97,13 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.register_button) {
+        if(v.getId()==R.id.register_imageView_backbutton){
+            toggleClickable(false);
+            fragmentListener.addOnboardingFragment();
+        }
+        else if (v.getId() == R.id.register_button) {
             if (!emptyField() && validPassword()) {
-                buttonRegister.setClickable(false);
+                toggleClickable(false);
                 mAuth.createUserWithEmailAndPassword(editTextEmail.getText().toString(), editTextPassword.getText().toString())
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
@@ -106,7 +114,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                                 }
                                 else {
                                     toastListener.toastFromFragment("Username already exists. Please try again.");
-                                    buttonRegister.setClickable(true);
+                                    toggleClickable(true);
                                 }
                             }
                         })
@@ -114,7 +122,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 toastListener.toastFromFragment("Check username and password. Please try again.");
-                                buttonRegister.setClickable(true);
+                                toggleClickable(true);
                             }
                         });
             }
@@ -185,5 +193,14 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                         }
                     }
                 });
+    }
+
+    private void toggleClickable(boolean clickable){
+        backButton.setClickable(clickable);
+        buttonRegister.setClickable(clickable);
+        editTextEmail.setClickable(clickable);
+        editTextPassword.setClickable(clickable);
+        editTextUsername.setClickable(clickable);
+        editTextRepeatPassword.setClickable(clickable);
     }
 }
